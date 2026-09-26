@@ -1,106 +1,120 @@
-<!DOCTYPE html>
-<html lang="sk">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VidEarn – Sleduj a získavaj odmeny</title>
+function updateBalance() {
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      color: #222;
+  document.getElementById("balance")
+    .textContent = balance.toFixed(2);
+}
+
+function startTask() {
+
+  const startButton =
+    document.getElementById("startButton");
+
+  const completeButton =
+    document.getElementById("completeButton");
+
+  const timer =
+    document.getElementById("timer");
+
+  startButton.disabled = true;
+
+  let seconds = 10;
+
+  timer.textContent =
+    "Testovanie: " + seconds + " s";
+
+  const interval = setInterval(() => {
+
+    seconds--;
+
+    timer.textContent =
+      "Testovanie: " + seconds + " s";
+
+    if (seconds <= 0) {
+
+      clearInterval(interval);
+
+      timer.textContent =
+        "Úloha je pripravená na dokončenie.";
+
+      completeButton.classList.remove("hidden");
     }
 
-    header {
-      background: #111827;
-      color: white;
-      padding: 25px 20px;
-      text-align: center;
-    }
+  }, 1000);
+}
 
-    header h1 {
-      margin: 0;
-      font-size: 36px;
-    }
+function completeTask() {
 
-    header p {
-      margin: 10px 0 0;
-      font-size: 17px;
-    }
+  balance += 0.01;
 
-    .container {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 20px;
-      text-align: center;
-    }
+  localStorage.setItem(
+    "videarn_balance",
+    balance
+  );
 
-    .card {
-      background: white;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-    }
+  const now = new Date().toLocaleString("sk-SK");
 
-    .button {
-      display: inline-block;
-      background: #2563eb;
-      color: white;
-      padding: 14px 25px;
-      border-radius: 8px;
-      text-decoration: none;
-      margin-top: 15px;
-      font-weight: bold;
-    }
+  history.unshift(
+    "Testovacia úloha +0,01 € – " + now
+  );
 
-    .video-box {
-      margin-top: 30px;
-      padding: 25px;
-      border: 2px dashed #cbd5e1;
-      border-radius: 12px;
-    }
+  localStorage.setItem(
+    "videarn_history",
+    JSON.stringify(history)
+  );
 
-    footer {
-      text-align: center;
-      padding: 30px;
-      color: #64748b;
-    }
-  </style>
-</head>
+  updateBalance();
+  updateHistory();
 
-<body>
+  document.getElementById("completeButton")
+    .classList.add("hidden");
 
-<header>
-  <h1>VidEarn</h1>
-  <p>Sleduj videá a získavaj odmeny</p>
-</header>
+  document.getElementById("startButton").disabled = false;
 
-<div class="container">
+  document.getElementById("timer").textContent =
+    "Úloha dokončená ✓";
 
-  <div class="card">
-    <h2>Vitaj vo VidEarn 👋</h2>
+  alert("Testovacia odmena 0,01 € bola pripísaná.");
+}
 
-    <p>
-      Pozerať krátke reklamné videá a plniť úlohy.
-      Za splnené úlohy môžeš získavať kredity.
-    </p>
+function updateHistory() {
 
-    <a href="#" class="button">Registrácia</a>
+  const list =
+    document.getElementById("history");
 
-    <div class="video-box">
-      <h3>🎬 Dostupné video</h3>
-      <p>Tu budú neskôr zobrazené videá a úlohy.</p>
-      <p><strong>Odmena: 0,01 €</strong></p>
-    </div>
-  </div>
+  list.innerHTML = "";
 
-</div>
+  if (history.length === 0) {
 
-<footer>
-  © 2026 VidEarn
-</footer>
+    list.innerHTML =
+      "<li>Zatiaľ nemáš žiadne dokončené úlohy.</li>";
+
+    return;
+  }
+
+  history.forEach(item => {
+
+    const li = document.createElement("li");
+
+    li.textContent = item;
+
+    list.appendChild(li);
+  });
+}
+
+function logout() {
+
+  document.getElementById("account")
+    .classList.add("hidden");
+
+  document.getElementById("login")
+    .classList.remove("hidden");
+}
+
+if (userName) {
+  showAccount();
+}
+
+</script>
 
 </body>
 </html>
