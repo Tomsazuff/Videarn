@@ -1,118 +1,150 @@
-function updateBalance() {
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VidEarn</title>
 
-  document.getElementById("balance")
-    .textContent = balance.toFixed(2);
+<style>
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f1f5f9;
+  color:#222;
 }
+header{
+  background:#111827;
+  color:white;
+  text-align:center;
+  padding:25px;
+}
+header h1{margin:0;font-size:36px}
+.container{
+  max-width:700px;
+  margin:30px auto;
+  padding:15px;
+}
+.card{
+  background:white;
+  padding:25px;
+  margin-bottom:20px;
+  border-radius:15px;
+  box-shadow:0 4px 15px #0001;
+}
+.balance{
+  font-size:24px;
+  font-weight:bold;
+}
+button{
+  background:#2563eb;
+  color:white;
+  border:0;
+  padding:14px 25px;
+  border-radius:8px;
+  font-size:16px;
+}
+button:disabled{
+  background:#94a3b8;
+}
+.video{
+  background:#e2e8f0;
+  height:220px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:10px;
+  font-size:22px;
+}
+footer{
+  text-align:center;
+  padding:25px;
+  color:#64748b;
+}
+</style>
+</head>
 
-function startTask() {
+<body>
 
-  const startButton =
-    document.getElementById("startButton");
+<header>
+<h1>VidEarn</h1>
+<p>Sleduj videá a získavaj kredity</p>
+</header>
 
-  const completeButton =
-    document.getElementById("completeButton");
+<div class="container">
 
-  const timer =
-    document.getElementById("timer");
+<div class="card">
+<h2>💰 Tvoj zostatok</h2>
+<p class="balance" id="balance">0,00 €</p>
+</div>
 
-  startButton.disabled = true;
+<div class="card">
+<h2>🎬 Dostupná úloha</h2>
 
-  let seconds = 10;
+<div class="video">
+▶️ DEMO VIDEO
+</div>
 
-  timer.textContent =
-    "Testovanie: " + seconds + " s";
+<p>Dokonči 10-sekundovú demo úlohu.</p>
 
-  const interval = setInterval(() => {
+<p>Čas: <strong id="timer">10</strong> sekúnd</p>
 
-    seconds--;
+<button id="start">Spustiť úlohu</button>
+<button id="complete" disabled>Dokončiť úlohu</button>
 
-    timer.textContent =
-      "Testovanie: " + seconds + " s";
+<p id="message"></p>
+</div>
 
-    if (seconds <= 0) {
+</div>
 
+<footer>
+© 2026 VidEarn
+</footer>
+
+<script>
+let balance = 0;
+let time = 10;
+let interval;
+
+const timer = document.getElementById("timer");
+const start = document.getElementById("start");
+const complete = document.getElementById("complete");
+const balanceText = document.getElementById("balance");
+const message = document.getElementById("message");
+
+start.onclick = function(){
+
+  start.disabled = true;
+  time = 10;
+  timer.textContent = time;
+
+  interval = setInterval(function(){
+
+    time--;
+    timer.textContent = time;
+
+    if(time <= 0){
       clearInterval(interval);
-
-      timer.textContent =
-        "Úloha je pripravená na dokončenie.";
-
-      completeButton.classList.remove("hidden");
+      complete.disabled = false;
+      message.textContent = "Úloha je pripravená na dokončenie.";
     }
 
-  }, 1000);
-}
+  },1000);
+};
 
-function completeTask() {
+complete.onclick = function(){
 
   balance += 0.01;
 
-  localStorage.setItem(
-    "videarn_balance",
-    balance
-  );
+  balanceText.textContent =
+    balance.toFixed(2).replace(".", ",") + " €";
 
-  const now = new Date().toLocaleString("sk-SK");
+  complete.disabled = true;
+  start.disabled = false;
 
-  history.unshift(
-    "Testovacia úloha +0,01 € – " + now
-  );
+  message.textContent =
+    "Úloha dokončená. Pridaný demo kredit 0,01 €.";
 
-  localStorage.setItem(
-    "videarn_history",
-    JSON.stringify(history)
-  );
-
-  updateBalance();
-  updateHistory();
-
-  document.getElementById("completeButton")
-    .classList.add("hidden");
-
-  document.getElementById("startButton").disabled = false;
-
-  document.getElementById("timer").textContent =
-    "Úloha dokončená ✓";
-
-  alert("Testovacia odmena 0,01 € bola pripísaná.");
-}
-
-function updateHistory() {
-
-  const list =
-    document.getElementById("history");
-
-  list.innerHTML = "";
-
-  if (history.length === 0) {
-
-    list.innerHTML =
-      "<li>Zatiaľ nemáš žiadne dokončené úlohy.</li>";
-
-    return;
-  }
-
-  history.forEach(item => {
-
-    const li = document.createElement("li");
-
-    li.textContent = item;
-
-    list.appendChild(li);
-  });
-}
-
-function logout() {
-
-  document.getElementById("account")
-    .classList.add("hidden");
-
-  document.getElementById("login")
-    .classList.remove("hidden");
-}
-
-if (userName) {
-  showAccount();
-}
+};
 
 </script>
 
