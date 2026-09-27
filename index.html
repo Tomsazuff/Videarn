@@ -102,7 +102,10 @@ footer{
 </div>
 
 </div>
-
+<div class="card">
+  <h2>📜 História</h2>
+  <p id="history">Zatiaľ žiadne záznamy.</p>
+</div>
 <footer>
 © 2026 VidEarn
 </footer>
@@ -117,6 +120,7 @@ const start = document.getElementById("start");
 const complete = document.getElementById("complete");
 const balanceText = document.getElementById("balance");
 const message = document.getElementById("message");
+  const history = document.getElementById("history");
 balanceText.textContent =
   balance.toFixed(2).replace(".", ",") + " €";
 start.onclick = function(){
@@ -142,6 +146,10 @@ start.onclick = function(){
 complete.onclick = function(){
 
   balance += 0.01;
+  const oldHistory = localStorage.getItem("videarn_history") || "";
+const newEntry = "Úloha dokončená — +0,01 €";
+localStorage.setItem("videarn_history", oldHistory + newEntry + "<br>");
+history.innerHTML = oldHistory + newEntry + "<br>";
 localStorage.setItem("videarn_balance", balance);
   balanceText.textContent =
     balance.toFixed(2).replace(".", ",") + " €";
