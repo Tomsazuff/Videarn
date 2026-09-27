@@ -121,6 +121,11 @@ const complete = document.getElementById("complete");
 const balanceText = document.getElementById("balance");
 const message = document.getElementById("message");
   const history = document.getElementById("history");
+  const savedHistory = localStorage.getItem("videarn_history");
+
+if (savedHistory) {
+  history.innerHTML = savedHistory;
+  }
 balanceText.textContent =
   balance.toFixed(2).replace(".", ",") + " €";
 start.onclick = function(){
