@@ -110,7 +110,8 @@ const start = document.getElementById("start");
 const complete = document.getElementById("complete");
 const balanceText = document.getElementById("balance");
 const message = document.getElementById("message");
-
+balanceText.textContent =
+  balance.toFixed(2).replace(".", ",") + " €";
 start.onclick = function(){
 
   start.disabled = true;
