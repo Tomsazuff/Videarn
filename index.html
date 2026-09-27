@@ -101,7 +101,7 @@ footer{
 </footer>
 
 <script>
-let balance = 0;
+let balance = Number(localStorage.getItem("videarn_balance")) || 0;
 let time = 10;
 let interval;
 
@@ -134,7 +134,7 @@ start.onclick = function(){
 complete.onclick = function(){
 
   balance += 0.01;
-
+localStorage.setItem("videarn_balance", balance);
   balanceText.textContent =
     balance.toFixed(2).replace(".", ",") + " €";
 
