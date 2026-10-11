@@ -2,246 +2,192 @@
 <html lang="sk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Moderátorka FINAL - Fotky</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Moderátorka CLOUD - 2 loginy - Kolotoč</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
 body{background:#0a0a0a;color:#fff;height:100vh;display:flex;flex-direction:column;overflow:hidden}
-.topbar{height:62px;background:#111;border-bottom:2px solid #ff2a6d;display:flex;align-items:center;justify-content:space-between;padding:0 10px}
-.logo{font-weight:900;color:#ff2a6d}
-.baby-bar{display:flex;gap:8px;align-items:center}
-.baby{width:44px;height:44px;border-radius:50%;border:3px solid #333;overflow:hidden;cursor:pointer;position:relative}
+.topbar{height:62px;background:#111;border-bottom:2px solid #ff2a6d;display:flex;align-items:center;justify-content:space-between;padding:0 12px}
+.baby-bar{display:flex;gap:6px}
+.baby{width:44px;height:44px;border-radius:50%;border:3px solid #333;overflow:hidden;cursor:pointer}
 .baby.active{border-color:#ff2a6d;box-shadow:0 0 10px #ff2a6d}
 .baby img{width:100%;height:100%;object-fit:cover}
-.baby span{position:absolute;bottom:-2px;left:0;right:0;background:rgba(0,0,0,.8);font-size:7px;text-align:center;color:#fff}
-.top-actions{display:flex;gap:6px}
-.btn{background:#222;border:1px solid #333;color:#fff;padding:6px 10px;border-radius:20px;font-size:11px;cursor:pointer}
-.btn.on{background:#2ecc71}
 .main{flex:1;display:flex;overflow:hidden}
 .left{width:32%;min-width:280px;background:#151515;border-right:1px solid #222;display:flex;flex-direction:column}
 .center{flex:1;background:#0e0e0e;display:flex;flex-direction:column}
 .right{width:28%;min-width:260px;background:#151515;border-left:1px solid #222;display:flex;flex-direction:column;overflow:auto}
-.head{padding:8px 10px;background:#1a1a1a;border-bottom:1px solid #222;display:flex;justify-content:space-between;align-items:center;font-size:13px}
-.list{overflow:auto;flex:1}
+.head{padding:8px 10px;background:#1a1a1a;border-bottom:1px solid #222;display:flex;justify-content:space-between;font-size:13px}
 .user{display:flex;gap:8px;padding:8px 10px;border-bottom:1px solid #1e1e1e;cursor:pointer}
 .user.active{background:#ff2a6d30;border-left:3px solid #ff2a6d}
 .user img{width:44px;height:44px;border-radius:50%;object-fit:cover;background:#222}
-.user b{font-size:13px}
 .small{font-size:10px;color:#888}
 .chat{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
-.bub{max-width:75%;padding:8px 12px;border-radius:14px;font-size:13px}
+.bub{max-width:78%;padding:8px 12px;border-radius:14px;font-size:13px}
 .bub.me{background:#2a2a2a;align-self:flex-start}
 .bub.baba{background:#ff2a6d;align-self:flex-end}
-.bub img{width:160px;border-radius:8px;margin-top:4px;display:block}
-.input{padding:8px;background:#151515;border-top:1px solid #222}
-.input-row{display:flex;gap:6px}
-textarea{background:#222;border:1px solid #333;color:#fff;padding:8px 10px;border-radius:10px;width:100%;font-size:13px}
-button.send{background:#ff2a6d;color:#fff;border:none;padding:8px 14px;border-radius:10px;font-weight:800;cursor:pointer}
-.profile{text-align:center;padding:12px;border-bottom:1px solid #222}
-.profile img{width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid #ff2a6d}
-.diary{padding:8px}
-.diary textarea{height:80px;font-size:11px}
-.stat{background:#1e1e1e;border:1px solid #2a2a2a;border-radius:10px;padding:8px;margin:4px}
-.stat b{color:#ff2a6d;font-size:14px}
-.gallery{display:flex;gap:4px;flex-wrap:wrap;padding:4px}
-.gallery img{width:50px;height:50px;border-radius:6px;object-fit:cover}
-@media(max-width:900px){.main{flex-direction:column}.left,.right{width:100%;min-width:auto;max-height:35vh}.center{height:50vh}}
+.bub i{font-size:9px;opacity:.7;display:block;margin-bottom:2px}
+.btn{background:#222;border:1px solid #333;color:#fff;padding:6px 10px;border-radius:20px;font-size:11px;cursor:pointer}
+.btn.stats{background:#ff2a6d;font-weight:800}
+.login{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;z-index:999}
+.login-box{background:#151515;padding:24px;border-radius:14px;border:1px solid #333;width:320px}
+.login-box input{width:100%;padding:11px;margin:6px 0;background:#222;border:1px solid #333;color:#fff;border-radius:10px}
 </style>
 </head>
 <body>
+
+<div id="login" class="login">
+<div class="login-box">
+<h3 style="color:#ff2a6d;margin-bottom:10px">💋 Prihlásenie</h3>
+<input id="modMeno" placeholder="rene alebo nikol">
+<input id="modHeslo" type="password" placeholder="heslo">
+<button class="btn stats" style="width:100%;margin-top:12px;padding:10px" onclick="loginMod()">Prihlásiť sa</button>
+<div class="small" style="margin-top:12px;line-height:1.4">
+<b>rene / rene123</b> = majiteľ - vidí VŠETKO + 📊 STATS<br>
+<b>nikol / nikol123</b> = moderátorka - vidí len svojich chlapov, BEZ stats<br><br>
+Obe píšete ako 1 žena - chlap vidí len Veronika, nie vaše mená.
+</div>
+</div>
+</div>
+
 <div class="topbar">
-<div class="logo">💋 MODERÁTORKA</div>
+<div style="font-weight:900;color:#ff2a6d">💋 MODERÁTORKA KOLOTOČ</div>
 <div class="baby-bar" id="babyBar"></div>
-<div class="top-actions">
-<button class="btn on" id="onlineBtn" onclick="toggleOnline()">🟢 Prihlásená</button>
-<button class="btn" onclick="showStats()">📊 Stats</button>
-<button class="btn" onclick="location.reload()">↻</button>
+<div style="display:flex;gap:8px;align-items:center">
+<span id="who" class="small" style="font-weight:800"></span>
+<button class="btn stats" id="statsBtn" onclick="showStats()" style="display:none">📊 STATS len majiteľ</button>
+<button class="btn" onclick="location.reload()">Odhlásiť</button>
 </div>
 </div>
 
 <div class="main">
 <div class="left">
-<div class="head"><b>👨 Chlapi (<span id="cnt">0</span>)</b><span class="small" id="statsMini">0 kr spolu</span></div>
-<div class="list" id="userList"></div>
-<div class="head"><b id="chlapTitle">Vyber chlapa</b><button class="btn" onclick="addKr()">+kr</button></div>
-<div id="chlapDetail" style="padding:8px;overflow:auto">
-<div class="small" style="text-align:center">Vyber chlapa vľavo - tu uvidíš jeho fotku, denník, galériu</div>
+<div class="head"><b id="leftTitle">👨 Chlapi</b><span id="cnt" class="small"></span></div>
+<div id="userList" style="flex:1;overflow:auto"></div>
+<div class="head"><b class="small">Kolotoč: Peter→René, Ján→Nikol, Fero→René...</b></div>
 </div>
-</div>
-
 <div class="center">
-<div class="head"><div><b id="chatTitle">Vyber chlapa a babu hore</b><div class="small" id="chatSub"></div></div></div>
+<div class="head"><div><b id="chatTitle">Vyber chlapa</b><div class="small" id="assignInfo"></div></div></div>
 <div class="chat" id="chatBox"></div>
-<div class="input">
-<div id="quick" style="margin-bottom:6px"></div>
-<div class="input-row"><textarea id="msgIn" rows="2" placeholder="Píš za babu..."></textarea><button class="send" onclick="sendBaba()">Odoslať</button></div>
-<div style="display:flex;gap:6px;margin-top:6px"><button class="btn" onclick="toggleEmoji()">😊</button><button class="btn" onclick="document.getElementById('fIn').click()">📷 Foto</button><input id="fIn" type="file" accept="image/*" style="display:none"></div>
-<div id="emojiBox" style="display:none;padding:6px"></div>
+<div style="padding:8px;background:#151515;border-top:1px solid #222">
+<textarea id="msgIn" rows="2" style="width:100%;background:#222;border:1px solid #333;color:#fff;border-radius:10px;padding:8px;font-size:13px" placeholder="Píšeš ako Veronika... chlap nevidí tvoje meno, len Veronika"></textarea>
+<button style="background:#ff2a6d;color:#fff;border:none;padding:10px;border-radius:10px;margin-top:6px;width:100%;font-weight:900;cursor:pointer" onclick="send()">Odoslať ako Veronika → chlapovi</button>
+<div class="small" style="text-align:center;margin-top:4px">Chlap uvidí len "Veronika", interne vidíš kto písal ty / Nikol</div>
 </div>
 </div>
-
 <div class="right">
-<div class="profile">
-<img id="myFoto" src="1.jpg" onerror="this.src='https://via.placeholder.com/100'">
-<div style="font-weight:800;margin-top:4px" id="babaName">Veronika 25 Žilina</div>
-<div class="small">Tvoja žena - odpisuješ za ňu</div>
-</div>
-<div class="diary">
-<b class="small">📓 Denník chlapa (osobitne)</b>
-<textarea id="chlapDiary" placeholder="Poznámky o chlapovi..."></textarea>
-<button class="send" style="width:100%;margin-top:4px;background:#333;font-size:11px" onclick="saveChlapDiary()">Uložiť denník chlapa</button>
-</div>
-<div class="diary" style="border-top:1px solid #222">
-<b class="small">📓 Môj denník</b>
-<textarea id="myDiary" placeholder="Tvoje poznámky... zárobok..."></textarea>
-<button class="send" style="width:100%;margin-top:4px;background:#333;font-size:11px" onclick="saveMyDiary()">Uložiť môj denník</button>
+<div style="padding:12px;text-align:center;border-bottom:1px solid #222">
+<img id="babaFoto" src="1.jpg" style="width:90px;height:90px;border-radius:50%;border:3px solid #ff2a6d" onerror="this.src='https://via.placeholder.com/90'">
+<div id="babaName" style="font-weight:900;margin-top:4px">Veronika</div>
+<div class="small">Píšeš ako 1 žena - chlap nevie že ste 2</div>
 </div>
 <div style="padding:8px">
-<b class="small">🖼️ Fotky od chlapa</b>
-<div class="gallery" id="gal"></div>
+<b class="small">📓 Kto písal ako Veronika (len pre vás)</b>
+<div id="internalLog" style="font-size:10px;color:#aaa;max-height:320px;overflow:auto;margin-top:6px;line-height:1.4"></div>
 </div>
-<div id="miniStats" style="padding:6px"></div>
-</div>
-</div>
-
-<div id="statsModal" style="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:99;display:none;align-items:center;justify-content:center;padding:10px">
-<div style="background:#151515;width:100%;max-width:600px;border-radius:12px;border:1px solid #333;max-height:90vh;overflow:auto">
-<div class="head"><b>📊 Stats od 0</b><button class="btn" onclick="document.getElementById('statsModal').style.display='none'">✕</button></div>
-<div id="fullStats" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px"></div>
 </div>
 </div>
 
 <script>
+// === 2 LOGINY ===
+const MODS = {
+  rene: {heslo:'rene123', jeMajitel:true, farba:'#ff2a6d', label:'René 👑 majiteľ'},
+  nikol: {heslo:'nikol123', jeMajitel:false, farba:'#2ecc71', label:'Nikol moderátorka'}
+}
 const BABY=[
-{name:'Veronika',vek:25,mesto:'Žilina',img:'1.jpg',bot:'Ahoj 😏 Veronika 25 zo Žiliny... videla som že si blízko, čo robíš večer? Som sama doma a nudím sa 🔥'},
-{name:'Katka',vek:26,mesto:'Nitra',img:'2.jpg',bot:'Hej ty 😘 Katka 26... máš fotku? Ja ti pošlem moju ak ty pošleš svoju 🙈'},
-{name:'Simona',vek:23,mesto:'Trnava',img:'3.jpg',bot:'Ahoj zlatko Simona 23... som sama doma a nudím sa, pokecáme šteklivo? 💋'},
-{name:'Lenka',vek:27,mesto:'Košice',img:'4.jpg',bot:'Čauko 😈 Lenka 27 z Košíc... hľadám niekoho na horúci chat, si tu? 🍑'},
-{name:'Petra',vek:24,mesto:'Bratislava',img:'5.jpg',bot:'Ahoj 😍 Petra 24 z BA... čo povieš na trochu zábavy? 🍒'}
-];
+ {name:'Veronika', img:'1.jpg'},
+ {name:'Katka', img:'2.jpg'},
+ {name:'Simona', img:'3.jpg'},
+ {name:'Lenka', img:'4.jpg'},
+ {name:'Petra', img:'5.jpg'}
+]
 let selBaba=BABY[0];
 let selChlap=null;
-let online=true;
-const QUICK=['Ahoj 😏','Máš fotku? 😘','Si sám? 🔥','Čo robíš? 🙈','Pošleš odvážnu? 💋','Páčiš sa mi 😍','Som nadržaná 💦','Chceš moju fotku? 🍑'];
+let ja=null;
+
+function loginMod(){
+ let m=document.getElementById('modMeno').value.toLowerCase().trim();
+ let h=document.getElementById('modHeslo').value.trim();
+ if(MODS[m] && MODS[m].heslo===h){
+  ja={meno:m,...MODS[m]};
+  document.getElementById('login').style.display='none';
+  document.getElementById('who').innerText=ja.label;
+  document.getElementById('who').style.color=ja.farba;
+  if(ja.jeMajitel) document.getElementById('statsBtn').style.display='block';
+  document.getElementById('leftTitle').innerText= ja.jeMajitel? '👨 Všetci chlapi (vidíš všetko)': '👨 Moji chlapi (kolotoč)';
+  renderBaby(); renderUsers();
+ } else alert('Zlé meno/heslo! rene/rene123 alebo nikol/nikol123');
+}
+
+function renderBaby(){
+ let bar=document.getElementById('babyBar'); bar.innerHTML='';
+ BABY.forEach(b=>{
+  let d=document.createElement('div'); d.className='baby'+(selBaba.name===b.name?' active':'');
+  d.innerHTML=`<img src="${b.img}" onerror="this.src='https://via.placeholder.com/90'">`;
+  d.onclick=()=>{selBaba=b; document.getElementById('babaFoto').src=b.img; document.getElementById('babaName').innerText=b.name; renderBaby(); renderChat(); renderUsers();}
+  bar.appendChild(d);
+ })
+ document.getElementById('babaFoto').src=selBaba.img; document.getElementById('babaName').innerText=selBaba.name;
+}
 
 function getUsers(){return JSON.parse(localStorage.getItem('spoznajma_users')||'[]');}
-function getPlatby(){return JSON.parse(localStorage.getItem('spoznajma_platby')||'[]');}
-
-function renderBabyBar(){
- const bar=document.getElementById('babyBar');bar.innerHTML='';
- BABY.forEach(b=>{
-  const d=document.createElement('div');d.className='baby'+(selBaba.name===b.name?' active':'');
-  d.innerHTML=`<img src="${b.img}" onerror="this.src='https://via.placeholder.com/100'"><span>${b.name}</span>`;
-  d.onclick=()=>{selBaba=b;document.getElementById('myFoto').src=b.img;document.getElementById('babaName').innerText=b.name+' '+b.vek+' '+b.mesto;renderBabyBar();renderUsers();renderChat();renderDetail();checkBot();};
-  bar.appendChild(d);
- });
- document.getElementById('myFoto').src=selBaba.img;document.getElementById('babaName').innerText=selBaba.name+' '+selBaba.vek+' '+selBaba.mesto;
-}
+function getMsgs(id,baba){return JSON.parse(localStorage.getItem(`msgs_${id}_${baba}`)||'[]');}
 
 function renderUsers(){
- const users=getUsers();document.getElementById('cnt').innerText=users.length;
- let tot=users.reduce((s,u)=>s+(u.kredity||0),0);document.getElementById('statsMini').innerText=tot+' kr spolu';
- const list=document.getElementById('userList');list.innerHTML='';
- users.slice().reverse().forEach(u=>{
-  const key=`msgs_${u.id}_${selBaba.name}`;const chat=JSON.parse(localStorage.getItem(key)||'[]');const last=chat[chat.length-1];
-  const d=document.createElement('div');d.className='user'+(selChlap===u.id?' active':'');
-  d.innerHTML=`<img src="${u.profilFoto||'https://via.placeholder.com/100'}"><div style="flex:1"><b>${u.meno}</b> <span class="small">${u.vek} ${u.mesto}</span><div class="small">${last?last.text.slice(0,28):'žiadna správa pre '+selBaba.name}</div></div><div><div style="font-size:12px;font-weight:800">${u.kredity} kr</div><div class="small">${u.kredity<=0?'🔒':''}</div></div>`;
-  d.onclick=()=>{selChlap=u.id;renderUsers();renderChat();renderDetail();checkBot();};
-  list.appendChild(d);
+ let users=getUsers();
+ let modsList=Object.keys(MODS);
+ users.forEach((u,i)=>{
+  if(!u.assignedTo){ u.assignedTo=modsList[i % modsList.length]; }
  });
-}
-
-function renderDetail(){
- if(!selChlap){document.getElementById('chlapDetail').innerHTML='<div class="small" style="text-align:center">Vyber chlapa</div>';return;}
- const u=getUsers().find(x=>x.id===selChlap);
- document.getElementById('chlapDetail').innerHTML=`
- <div style="text-align:center"><img src="${u.profilFoto||'https://via.placeholder.com/120'}" style="width:80px;height:80px;border-radius:50%;border:2px solid #ff2a6d"><div style="margin-top:4px"><b>${u.meno} ${u.vek}</b><div class="small">${u.mesto} • ID ${u.id}</div><div class="small">Kredity: ${u.kredity} • ${u.kredity<=0?'🔒 BLOKOVANÝ': '🟢 Môže písať'}</div></div></div>`;
- document.getElementById('chlapDiary').value=localStorage.getItem(`dennik_${selChlap}`)||'';
- const key=`msgs_${u.id}_${selBaba.name}`;const chat=JSON.parse(localStorage.getItem(key)||'[]');
- const gal=document.getElementById('gal');gal.innerHTML='';chat.filter(m=>m.foto).forEach(m=>{const im=document.createElement('img');im.src=m.foto;gal.appendChild(im);});
-}
-
-function checkBot(){
- if(!selChlap)return;
- const key=`msgs_${selChlap}_${selBaba.name}`;const chat=JSON.parse(localStorage.getItem(key)||'[]');
- const sent=`bot_${selChlap}_${selBaba.name}`;
- if(chat.length===0 &&!localStorage.getItem(sent)){
-  const txt=localStorage.getItem('bot_'+selBaba.name)||selBaba.bot;
-  chat.push({me:false,text:txt,time:new Date().toLocaleTimeString().slice(0,5),bot:true});
-  localStorage.setItem(key,JSON.stringify(chat));localStorage.setItem(sent,'1');renderChat();
- }
+ localStorage.setItem('spoznajma_users', JSON.stringify(users));
+ let zobraz = ja.jeMajitel? users : users.filter(u=>u.assignedTo===ja.meno);
+ document.getElementById('cnt').innerText=`${zobraz.length} / ${users.length}`;
+ let list=document.getElementById('userList'); list.innerHTML='';
+ zobraz.slice().reverse().forEach(u=>{
+  let chat=getMsgs(u.id, selBaba.name);
+  let last=chat[chat.length-1];
+  let d=document.createElement('div'); d.className='user'+(selChlap===u.id?' active':'');
+  d.innerHTML=`<img src="${u.profilFoto||'https://via.placeholder.com/80'}"><div style="flex:1"><b>${u.meno}</b> <span class="small">${u.vek}r ${u.mesto} • ${u.assignedTo} • ${u.kredity}kr</span><div class="small">${last?last.text.slice(0,28):'nový - čaká na prvú správu'}</div></div>`;
+  d.onclick=()=>{selChlap=u.id; renderUsers(); renderChat();}
+  list.appendChild(d);
+ })
 }
 
 function renderChat(){
- const box=document.getElementById('chatBox');
- if(!selChlap){box.innerHTML='<div class="small" style="text-align:center;margin-top:20px">Vyber chlapa vľavo a babu hore - bot pošle prvú šteklivú správu</div>';return;}
- const u=getUsers().find(x=>x.id===selChlap);
+ if(!selChlap){document.getElementById('chatBox').innerHTML='<div class="small" style="text-align:center;margin-top:30px">Vyber chlapa vľavo<br>Uvidíš celú históriu čo písala René aj Nikol ako 1 žena Veronika<br>Chlap nevidí vaše mená</div>'; return;}
+ let u=getUsers().find(x=>x.id===selChlap);
  document.getElementById('chatTitle').innerText=`${u.meno} ↔ ${selBaba.name}`;
- document.getElementById('chatSub').innerText=`${u.meno} ${u.kredity} kr • ${selBaba.name} ${online?'online 🟢':'offline 🔴'}`;
- const key=`msgs_${u.id}_${selBaba.name}`;const chat=JSON.parse(localStorage.getItem(key)||'[]');
- box.innerHTML='';chat.forEach(m=>{
-  const d=document.createElement('div');d.className='bub '+(m.me?'me':'baba');
-  d.innerHTML=`<div class="small" style="opacity:.6">${m.me?u.meno:selBaba.name} ${m.bot?'🤖':''} • ${m.time||''}</div>${m.text||''}${m.foto?`<img src="${m.foto}">`:''}`;
+ document.getElementById('assignInfo').innerText=`Priradený: ${u.assignedTo} | Teraz píše: ${ja.meno} ako ${selBaba.name} | Chlap vidí len ${selBaba.name}`;
+ let chat=getMsgs(u.id, selBaba.name);
+ let box=document.getElementById('chatBox'); box.innerHTML='';
+ let log=document.getElementById('internalLog'); log.innerHTML='';
+ chat.forEach(m=>{
+  let d=document.createElement('div'); d.className='bub '+(m.me?'me':'baba');
+  d.innerHTML=`<i>${m.me?u.meno:selBaba.name} ${!m.me && m.moderator?` (písala ${m.moderator})`:''} • ${m.time||''}</i>${m.text}`;
   box.appendChild(d);
- });box.scrollTop=box.scrollHeight;
+  if(!m.me) log.innerHTML+=`<div><b>${m.moderator||'?'}</b> ako ${selBaba.name} o ${m.time}: ${m.text.slice(0,40)}</div>`;
+ });
+ box.scrollTop=box.scrollHeight;
 }
 
-function sendBaba(){
- const inp=document.getElementById('msgIn');const txt=inp.value.trim();if(!txt||!selChlap)return;
- const u=getUsers().find(x=>x.id===selChlap);const key=`msgs_${u.id}_${selBaba.name}`;const chat=JSON.parse(localStorage.getItem(key)||'[]');
- chat.push({me:false,text:txt,time:new Date().toLocaleTimeString().slice(0,5)});localStorage.setItem(key,JSON.stringify(chat));inp.value='';renderChat();renderMini();
-}
-
-function toggleEmoji(){
- const box=document.getElementById('emojiBox');box.style.display=box.style.display==='none'?'block':'none';
- if(box.innerHTML===''){['😊','😍','😘','❤️','🔥','😏','💋','🥰','😂','😈','👅','💦','🍑','🍒','😋','🥵','🙈'].forEach(e=>{const s=document.createElement('span');s.style.cssText='font-size:20px;padding:6px;cursor:pointer;display:inline-block';s.innerText=e;s.onclick=()=>{document.getElementById('msgIn').value+=e;};box.appendChild(s);});}
-}
-function toggleOnline(){online=!online;document.getElementById('onlineBtn').innerText=online?'🟢 Prihlásená':'🔴 Odhlásená';}
-function saveChlapDiary(){if(!selChlap)return;localStorage.setItem(`dennik_${selChlap}`,document.getElementById('chlapDiary').value);alert('Denník chlapa uložený');}
-function saveMyDiary(){localStorage.setItem('moj_dennik',document.getElementById('myDiary').value);alert('Môj denník uložený');}
-
-function renderQuick(){
- const c=document.getElementById('quick');c.innerHTML='';QUICK.forEach(q=>{const b=document.createElement('span');b.style.cssText='background:#222;border:1px solid #333;padding:4px 8px;border-radius:12px;font-size:10px;margin:2px;display:inline-block;cursor:pointer';b.innerText=q;b.onclick=()=>{document.getElementById('msgIn').value=q;};c.appendChild(b);});
-}
-function addKr(){
- if(!selChlap){alert('Vyber chlapa');return;}
- const eur=parseFloat(prompt('Koľko € zaplatil? (5,10,20,50)','20'));if(!eur)return;
- let kr=eur===5?10:eur===10?21:eur===20?44:eur===50?115:Math.round(eur*2);
- let users=getUsers();let i=users.findIndex(u=>u.id===selChlap);if(i>-1){users[i].kredity+=kr;localStorage.setItem('spoznajma_users',JSON.stringify(users));
- let p=getPlatby();p.push({chlapId:selChlap,eur,kr,date:Date.now()});localStorage.setItem('spoznajma_platby',JSON.stringify(p));renderUsers();renderDetail();renderMini();alert(`+${kr} kr za ${eur}€`);}
-}
-
-function renderMini(){
- const platby=getPlatby();let totE=0,totK=0;platby.forEach(p=>{totE+=p.eur;totK+=p.kr;});
- const today=new Date().toDateString();let todayE=0,todayK=0;platby.forEach(p=>{if(new Date(p.date).toDateString()===today){todayE+=p.eur;todayK+=p.kr;}});
- const weekAgo=Date.now()-7*24*3600*1000;let weekE=0,weekK=0;platby.forEach(p=>{if(p.date>weekAgo){weekE+=p.eur;weekK+=p.kr;}});
- const net=(totE*0.971 - platby.length*0.25).toFixed(2);
- document.getElementById('miniStats').innerHTML=`<div class="stat"><div class="small">💳 Chlapi kúpili dokopy</div><b>${totK} kr</b><div class="small">= ${totE}€ • Dnes ${todayK} kr</div></div><div class="stat"><div class="small">🏦 Na účet príde</div><b>${net}€</b><div class="small">po Stripe | Týždeň ${weekE}€</div></div>`;
+function send(){
+ let txt=document.getElementById('msgIn').value.trim(); if(!txt||!selChlap) return;
+ let u=getUsers().find(x=>x.id===selChlap);
+ let key=`msgs_${u.id}_${selBaba.name}`;
+ let chat=JSON.parse(localStorage.getItem(key)||'[]');
+ chat.push({me:false, text:txt, time:new Date().toLocaleTimeString().slice(0,5), moderator:ja.meno, baba:selBaba.name});
+ localStorage.setItem(key, JSON.stringify(chat));
+ document.getElementById('msgIn').value=''; renderChat(); renderUsers();
 }
 
 function showStats(){
- document.getElementById('statsModal').style.display='flex';
- const platby=getPlatby();const users=getUsers();
- let totE=0,totK=0;platby.forEach(p=>{totE+=p.eur;totK+=p.kr;});
- let todayE=0,todayK=0,weekE=0,weekK=0;const today=new Date().toDateString();const weekAgo=Date.now()-7*24*3600*1000;
- platby.forEach(p=>{if(new Date(p.date).toDateString()===today){todayE+=p.eur;todayK+=p.kr;} if(p.date>weekAgo){weekE+=p.eur;weekK+=p.kr;}});
- let recv=0,sent=0;users.forEach(u=>{BABY.forEach(b=>{const k=`msgs_${u.id}_${b.name}`;const ch=JSON.parse(localStorage.getItem(k)||'[]');ch.forEach(m=>{if(m.me)recv++;else sent++;});});});
- document.getElementById('fullStats').innerHTML=`
- <div class="stat"><div class="small">💰 Dnes</div><b>${todayE}€</b><div class="small">${todayK} kr kúpili</div></div>
- <div class="stat"><div class="small">💰 Týždeň</div><b>${weekE}€</b><div class="small">${weekK} kr • Na účet ${(weekE*0.971 - platby.filter(p=>p.date>weekAgo).length*0.25).toFixed(2)}€</div></div>
- <div class="stat"><div class="small">💰 Celkom</div><b>${totE}€</b><div class="small">Na účet ${(totE*0.971 - platby.length*0.25).toFixed(2)}€ - výplata piatok</div></div>
- <div class="stat"><div class="small">💳 Kredity dokopy kúpili chlapi</div><b>${totK} kr</b><div class="small">Priemer ${(users.length?totK/users.length:0).toFixed(1)} kr/chlap</div></div>
- <div class="stat"><div class="small">💬 Prijaté</div><b>${recv}</b></div>
- <div class="stat"><div class="small">💬 Odoslané</div><b>${sent}</b></div>
- <div class="stat"><div class="small">👥 Chlapov</div><b>${users.length}</b><div class="small">Bloknutých ${users.filter(u=>u.kredity<=0).length}</div></div>
- `;
+ if(!ja.jeMajitel){alert('STATS len pre majiteľa!'); return;}
+ let users=getUsers(); let totK=users.reduce((s,u)=>s+(u.kredity||0),0);
+ let platby=JSON.parse(localStorage.getItem('spoznajma_platby')||'[]');
+ let totE=0; platby.forEach(p=>totE+=p.eur);
+ alert(`📊 STATS - LEN MAJITEĽ René\n\nChlapov celkom: ${users.length}\nZ toho u René: ${users.filter(u=>u.assignedTo==='rene').length}\nZ toho u Nikol: ${users.filter(u=>u.assignedTo==='nikol').length}\n\nKreditov dokopy kúpili: ${totK} kr\n€ dokopy: ${totE}€\n\nToto vidíš len ty, Nikol nie!`);
 }
-
-document.getElementById('myDiary').value=localStorage.getItem('moj_dennik')||'';
-renderBabyBar();renderUsers();renderQuick();renderMini();
-document.getElementById('msgIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendBaba();}});
-document.getElementById('fIn').addEventListener('change',e=>{const f=e.target.files[0];if(!f||!selChlap)return;const r=new FileReader();r.onload=()=>{const u=getUsers().find(x=>x.id===selChlap);const key=`msgs_${u.id}_${selBaba.name}`;const ch=JSON.parse(localStorage.getItem(key)||'[]');ch.push({me:false,foto:r.result,time:new Date().toLocaleTimeString().slice(0,5)});localStorage.setItem(key,JSON.stringify(ch));renderChat();renderDetail();};r.readAsDataURL(f);});
-setInterval(()=>{renderUsers();renderMini();},3000);
+renderBaby();
+document.getElementById('msgIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});
 </script>
 </body>
 </html>
