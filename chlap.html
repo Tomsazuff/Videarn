@@ -11,87 +11,79 @@ body{background:#fff}
 .logo{font-weight:900;font-size:22px;color:#ff2a6d}
 .credits{background:#111;color:#fff;padding:6px 12px;border-radius:20px;font-size:13px;font-weight:700}
 .hero{padding:20px 16px;text-align:center}
-.hero h1{font-size:28px;font-weight:900}
-.hero h1 span{color:#ff2a6d}
 .cta{margin:6px;background:#ff2a6d;color:#fff;padding:14px 24px;border-radius:28px;font-weight:800;border:none}
 .cta.sec{background:#fff;color:#111;border:1px solid #ddd}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px}
 .card{border:1px solid #eee;border-radius:14px;overflow:hidden}
-.card img{width:100%;height:190px;object-fit:cover}
-.card.info{padding:10px}
+.card img{width:100%;height:220px;object-fit:cover}
 .btn-pisat{width:100%;background:#ff2a6d;color:#fff;border:none;padding:8px;border-radius:10px;font-weight:700;margin-top:8px}
-.reg-box{background:#f9f9f9;border:1px dashed #ddd;border-radius:12px;padding:12px;margin:16px;font-size:13px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:998;display:none;align-items:center;justify-content:center;padding:16px}
+.modal.open{display:flex}
 #chatModal{position:fixed;inset:0;width:100vw;height:100dvh;background:#fff;z-index:999;display:none;flex-direction:column}
 #chatModal.open{display:flex}
 .chat-head{height:56px;border-bottom:1px solid #eee;display:flex;align-items:center;padding:0 12px;gap:10px}
-.chat-head img{width:40px;height:40px;border-radius:50%}
 .messages{flex:1;overflow-y:auto;padding:16px;background:#fafafa;display:flex;flex-direction:column;gap:10px}
 .bubble{max-width:80%;padding:10px 14px;border-radius:18px;font-size:14px}
 .bubble.me{background:#ff2a6d;color:#fff;align-self:flex-end}
 .bubble.her{background:#e9e9e9;color:#000;align-self:flex-start}
-.input-area{background:#fff;border-top:1px solid #eee;padding:10px 12px}
+.input-area{background:#fff;border-top:1px solid #eee;padding:10px}
 .input-row{display:flex;gap:8px}
-textarea{flex:1;min-height:44px;border:1px solid #ddd;border-radius:22px;padding:12px 14px;font-size:16px}
+textarea{flex:1;min-height:44px;border:1px solid #ddd;border-radius:22px;padding:12px 14px}
 .send-btn{background:#ff2a6d;color:#fff;border:none;padding:12px 18px;border-radius:22px;font-weight:800}
-.tools{display:flex;gap:8px;margin-top:8px}
 .tool-btn{background:#f2f2f2;border:1px solid #e5e5e5;padding:6px 12px;border-radius:20px;font-size:13px}
 .emoji-picker{display:none;grid-template-columns:repeat(6,1fr);gap:6px;padding:8px;border:1px solid #eee;border-radius:12px;margin-top:8px}
 .emoji-picker.open{display:grid}
 .emoji{font-size:22px;text-align:center;padding:6px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:998;display:none;align-items:center;justify-content:center;padding:16px}
-.modal.open{display:flex}
+input.card-inp{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:10px;margin-top:8px}
+#payModal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
+#payModal.open{display:flex}
 .pay-box{background:#fff;width:100%;max-width:420px;border-radius:16px;padding:18px}
 .packages{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
 .pkg{border:2px solid #eee;border-radius:12px;padding:12px;text-align:center}
 .pkg.active{border-color:#ff2a6d;background:#fff0f4}
-input.card-inp{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:10px;margin-top:8px}
-.small{font-size:11px;color:#888;margin-top:8px}
-#payModal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
-#payModal.open{display:flex}
+.small{font-size:11px;color:#888}
 </style>
 </head>
 <body>
 <div class="header">
 <div class="logo">💋 SPOZNAJMA.SK</div>
-<div class="credits" onclick="openLogin()">💰 <span id="cr">0</span> kr • <span id="userName">Prihlásiť</span></div>
+<div class="credits" onclick="openLogin()">💰 <span id="cr">0</span> kr • <span id="userName">Prihlásit</span></div>
 </div>
 <div class="hero">
-<h1>Horúce baby z okolia <span>čakajú</span></h1>
-<p>18+ anonymný chat</p>
+<h1>Horúce baby z okolia čakajú</h1>
 <button class="cta" onclick="openRegister()">REGISTRÁCIA - 2 kr ZDARMA</button>
-<button class="cta sec" onclick="openLogin()">UŽ MÁM ÚČET - PRIHLÁSIŤ SA</button>
-<div class="reg-box">✅ Ráno odídeš, večer sa vrátiš? Klikni PRIHLÁSIŤ SA a zadaj meno+heslo - chaty a kredity tam budú!<br><small>moderovaný chat - zábavná služba</small></div>
+<button class="cta sec" onclick="openLogin()">PRIHLÁSENIE</button>
+<p class="small" style="margin-top:10px">tento chat je moderovaný chat - zábavná služba</p>
 </div>
 <div class="grid" id="grid"></div>
 
 <div id="regModal" class="modal">
 <div style="background:#fff;border-radius:16px;padding:18px;width:100%;max-width:380px">
 <h3>Registrácia - 2 kr</h3>
-<input id="rMeno" placeholder="Meno (login)" class="card-inp">
+<input id="rMeno" placeholder="Meno" class="card-inp">
 <input id="rVek" placeholder="Vek" type="number" class="card-inp">
 <input id="rMesto" placeholder="Mesto" class="card-inp">
 <input id="rHeslo" placeholder="Heslo" type="password" class="card-inp">
 <label style="display:flex;gap:8px;margin-top:10px;font-size:13px"><input type="checkbox" id="r18"> Mám 18+</label>
-<button onclick="doRegister()" style="width:100%;margin-top:12px;background:#ff2a6d;color:#fff;border:none;padding:12px;border-radius:12px;font-weight:800">Registrovať + 2 kr</button>
+<button onclick="doRegister()" style="width:100%;margin-top:12px;background:#ff2a6d;color:#fff;border:none;padding:12px;border-radius:12px;font-weight:800">Registrovať</button>
 <button onclick="closeModals()" style="width:100%;margin-top:8px;background:#eee;border:none;padding:10px;border-radius:12px">Zrušiť</button>
 </div>
 </div>
 
 <div id="loginModal" class="modal">
 <div style="background:#fff;border-radius:16px;padding:18px;width:100%;max-width:380px">
-<h3>Prihlásenie - návrat do chatu</h3>
-<p class="small">Zadaj meno a heslo z registrácie</p>
+<h3>Prihlásenie</h3>
 <input id="lMeno" placeholder="Meno" class="card-inp">
 <input id="lHeslo" placeholder="Heslo" type="password" class="card-inp">
-<button onclick="doLogin()" style="width:100%;margin-top:12px;background:#111;color:#fff;border:none;padding:12px;border-radius:12px;font-weight:800">Prihlásiť - načítať chaty</button>
+<button onclick="doLogin()" style="width:100%;margin-top:12px;background:#111;color:#fff;border:none;padding:12px;border-radius:12px;font-weight:800">Prihlásiť</button>
 <button onclick="closeModals()" style="width:100%;margin-top:8px;background:#eee;border:none;padding:10px;border-radius:12px">Zrušiť</button>
-<button onclick="doLogout()" style="width:100%;margin-top:8px;background:#fff;border:1px solid #ddd;padding:10px;border-radius:12px">Odhlásiť z mobilu</button>
+<button onclick="doLogout()" style="width:100%;margin-top:8px;background:#fff;border:1px solid #ddd;padding:10px;border-radius:12px">Odhlásiť</button>
 </div>
 </div>
 
 <div id="chatModal">
 <div class="chat-head">
-<img id="chatImg" src="">
+<img id="chatImg" src="" style="width:40px;height:40px;border-radius:50%;object-fit:cover">
 <div><div id="chatName" style="font-weight:800"></div><div style="font-size:12px;color:#2ecc71">● online</div></div>
 <button onclick="closeChat()" style="margin-left:auto">✕</button>
 </div>
@@ -101,10 +93,9 @@ input.card-inp{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:
 <textarea id="msgInput" placeholder="Napíš..."></textarea>
 <button class="send-btn" onclick="sendMsg()">Odoslať 0.5</button>
 </div>
-<div class="tools">
+<div class="tools" style="display:flex;gap:8px;margin-top:8px">
 <button class="tool-btn" onclick="toggleEmoji()">😊 Smajlíky</button>
 <label class="tool-btn">📷 Foto<input id="fotoInp" type="file" accept="image/*" style="display:none"></label>
-<button class="tool-btn" onclick="closeChat()">👩 Baby</button>
 </div>
 <div class="emoji-picker" id="emojiPicker"></div>
 <div id="fotoPreview"></div>
@@ -114,20 +105,20 @@ input.card-inp{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:
 <div id="payModal">
 <div class="pay-box">
 <h2>🔒 Nemáš kredity</h2>
+<p class="small">Správa 0.5 kr</p>
 <div class="packages" id="pkgs"></div>
 <button id="payBtn" onclick="doPay()" style="width:100%;margin-top:14px;background:#ff2a6d;color:#fff;border:none;padding:14px;border-radius:12px;font-weight:900">Zaplatit</button>
-<p class="small" style="text-align:center">DEMO - Stripe neskôr</p>
 <button onclick="document.getElementById('payModal').classList.remove('open')" style="width:100%;margin-top:8px;background:#eee;border:none;padding:10px;border-radius:10px">Zrušiť</button>
 </div>
 </div>
 
 <script>
 const BABY=[
-{name:'Veronika',vek:25,mesto:'Žilina',img:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400'},
-{name:'Katka',vek:26,mesto:'Nitra',img:'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400'},
-{name:'Simona',vek:23,mesto:'Trnava',img:'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400'},
-{name:'Lenka',vek:27,mesto:'Košice',img:'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400'},
-{name:'Petra',vek:24,mesto:'Bratislava',img:'https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=400'}
+{name:'Veronika',vek:25,mesto:'Žilina',img:'1.jpg'},
+{name:'Katka',vek:26,mesto:'Nitra',img:'2.jpg'},
+{name:'Simona',vek:23,mesto:'Trnava',img:'3.jpg'},
+{name:'Lenka',vek:27,mesto:'Košice',img:'4.jpg'},
+{name:'Petra',vek:24,mesto:'Bratislava',img:'5.jpg'}
 ];
 const BALIKY=[{eur:5,kr:10},{eur:10,kr:21,bonus:'+5%'},{eur:20,kr:44,bonus:'+10%'},{eur:50,kr:115,bonus:'+15%'}];
 let user=JSON.parse(localStorage.getItem('spoznajma_user')||'null');
@@ -135,17 +126,17 @@ let currentBaba=null;let selectedPkg=BALIKY[1];let pendingFoto=null;
 function closeModals(){document.getElementById('regModal').classList.remove('open');document.getElementById('loginModal').classList.remove('open');}
 function openRegister(){document.getElementById('regModal').classList.add('open')}
 function openLogin(){document.getElementById('loginModal').classList.add('open')}
-function renderCredits(){document.getElementById('cr').innerText=user?user.kredity:0;document.getElementById('userName').innerText=user?user.meno:'Prihlásiť'}
-function renderGrid(){const g=document.getElementById('grid');g.innerHTML='';BABY.forEach((b,i)=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<img src="${b.img}"><div class="info"><b>${b.name} ${b.vek}</b><div>${b.mesto}</div><button class="btn-pisat" onclick="openChat(${i})">Písať 0.5</button></div>`;g.appendChild(d);})}
-function renderPackages(){const p=document.getElementById('pkgs');p.innerHTML='';BALIKY.forEach((b)=>{const div=document.createElement('div');div.className='pkg'+(selectedPkg.eur===b.eur?' active':'');div.innerHTML=`<div><b>${b.eur}€</b></div><div>${b.kr} kr ${b.bonus||''}</div>`;div.onclick=()=>{selectedPkg=b;renderPackages();document.getElementById('payBtn').innerText=`Zaplatit ${b.eur}€ - ${b.kr} kr`};p.appendChild(div);});}
-function doRegister(){const meno=document.getElementById('rMeno').value.trim();const vek=document.getElementById('rVek').value.trim();const mesto=document.getElementById('rMesto').value.trim();const heslo=document.getElementById('rHeslo').value.trim();if(!meno||!vek||!mesto||!heslo){alert('Vyplň všetko');return}let users=JSON.parse(localStorage.getItem('spoznajma_users')||'[]');if(users.find(u=>u.meno.toLowerCase()===meno.toLowerCase())){alert('Meno existuje - prihlás sa');closeModals();openLogin();return}user={id:Date.now(),meno,vek,mesto,heslo,kredity:2};localStorage.setItem('spoznajma_user',JSON.stringify(user));users.push(user);localStorage.setItem('spoznajma_users',JSON.stringify(users));renderCredits();closeModals();alert('OK 2 kr ZDARMA! Večer sa prihlás menom+heslom');}
-function doLogin(){const meno=document.getElementById('lMeno').value.trim();const heslo=document.getElementById('lHeslo').value.trim();let users=JSON.parse(localStorage.getItem('spoznajma_users')||'[]');let found=users.find(u=>u.meno.toLowerCase()===meno.toLowerCase() && u.heslo===heslo);if(!found){alert('Zlé meno/heslo');return}user={...found};localStorage.setItem('spoznajma_user',JSON.stringify(user));renderCredits();closeModals();alert(`Vitaj ${user.meno}! Kredity ${user.kredity}`);}
+function renderCredits(){document.getElementById('cr').innerText=user?user.kredity:0;document.getElementById('userName').innerText=user?user.meno:'Prihlásit';}
+function renderGrid(){const g=document.getElementById('grid');g.innerHTML='';BABY.forEach((b,i)=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<img src="${b.img}"><div style="padding:10px"><b>${b.name} ${b.vek}</b><div>${b.mesto}</div><button class="btn-pisat" onclick="openChat(${i})">Písať 0.5</button></div>`;g.appendChild(d);})}
+function renderPackages(){const p=document.getElementById('pkgs');p.innerHTML='';BALIKY.forEach((b)=>{const div=document.createElement('div');div.className='pkg'+(selectedPkg.eur===b.eur?' active':'');div.innerHTML=`<div><b>${b.eur}€</b></div><div>${b.kr} kr ${b.bonus||''}</div>`;div.onclick=()=>{selectedPkg=b;renderPackages();};p.appendChild(div);});}
+function doRegister(){const meno=document.getElementById('rMeno').value.trim();const vek=document.getElementById('rVek').value.trim();const mesto=document.getElementById('rMesto').value.trim();const heslo=document.getElementById('rHeslo').value.trim();if(!meno||!vek||!mesto||!heslo){alert('Vyplň všetko');return}let users=JSON.parse(localStorage.getItem('spoznajma_users')||'[]');if(users.find(u=>u.meno.toLowerCase()===meno.toLowerCase())){alert('Meno existuje - prihlás sa');closeModals();openLogin();return}user={id:Date.now(),meno,vek,mesto,heslo,kredity:2};localStorage.setItem('spoznajma_user',JSON.stringify(user));users.push(user);localStorage.setItem('spoznajma_users',JSON.stringify(users));renderCredits();closeModals();alert('OK 2 kr ZDARMA');}
+function doLogin(){const meno=document.getElementById('lMeno').value.trim();const heslo=document.getElementById('lHeslo').value.trim();let users=JSON.parse(localStorage.getItem('spoznajma_users')||'[]');let found=users.find(u=>u.meno.toLowerCase()===meno.toLowerCase() && u.heslo===heslo);if(!found){alert('Zlé meno/heslo');return}user={...found};localStorage.setItem('spoznajma_user',JSON.stringify(user));renderCredits();closeModals();alert(`Vitaj ${user.meno}`);}
 function doLogout(){localStorage.removeItem('spoznajma_user');user=null;renderCredits();closeModals();}
 function openChat(idx){if(!user){openRegister();return}currentBaba=BABY[idx];document.getElementById('chatImg').src=currentBaba.img;document.getElementById('chatName').innerText=currentBaba.name;document.getElementById('chatModal').classList.add('open');loadMsgs();}
 function closeChat(){document.getElementById('chatModal').classList.remove('open')}
 function loadMsgs(){const msgs=document.getElementById('msgs');msgs.innerHTML='';const key=`msgs_${user.id}_${currentBaba.name}`;const list=JSON.parse(localStorage.getItem(key)||'[]');list.forEach(m=>{const div=document.createElement('div');div.className='bubble '+(m.me?'me':'her');div.innerHTML=`${m.text||''}${m.foto?`<img src="${m.foto}" style="width:200px;border-radius:10px;display:block;margin-top:6px">`:''}`;msgs.appendChild(div);});msgs.scrollTop=msgs.scrollHeight;}
-function sendMsg(){if(!user){openRegister();return}if(user.kredity<0.5){document.getElementById('payModal').classList.add('open');return}const inp=document.getElementById('msgInput');const text=inp.value.trim();if(!text &&!pendingFoto)return;const key=`msgs_${user.id}_${currentBaba.name}`;const list=JSON.parse(localStorage.getItem(key)||'[]');list.push({me:true,text,foto:pendingFoto,time:new Date().toLocaleTimeString()});localStorage.setItem(key,JSON.stringify(list));let all=JSON.parse(localStorage.getItem('spoznajma_vsetky_spravy')||'[]');all.push({chlap:user.meno,baba:currentBaba.name,text,foto:pendingFoto,time:new Date().toISOString()});localStorage.setItem('spoznajma_vsetky_spravy',JSON.stringify(all));user.kredity-=0.5;let users=JSON.parse(localStorage.getItem('spoznajma_users')||'[]');let i=users.findIndex(u=>u.id===user.id);if(i>-1){users[i].kredity=user.kredity;localStorage.setItem('spoznajma_users',JSON.stringify(users));}localStorage.setItem('spoznajma_user',JSON.stringify(user));renderCredits();inp.value='';pendingFoto=null;document.getElementById('fotoPreview').innerHTML='';loadMsgs();}
-function doPay(){user.kredity+=selectedPkg.kr;let users=JSON.parse(localStorage.getItem('spoznajma_users')||'[]');let i=users.findIndex(u=>u.id===user.id);if(i>-1){users[i].kredity=user.kredity;localStorage.setItem('spoznajma_users',JSON.stringify(users));}localStorage.setItem('spoznajma_user',JSON.stringify(user));renderCredits();document.getElementById('payModal').classList.remove('open');alert(`Pripísané ${selectedPkg.kr} kr DEMO`);}
+function sendMsg(){if(!user){openRegister();return}if(user.kredity<0.5){document.getElementById('payModal').classList.add('open');return}const inp=document.getElementById('msgInput');const text=inp.value.trim();if(!text &&!pendingFoto)return;const key=`msgs_${user.id}_${currentBaba.name}`;const list=JSON.parse(localStorage.getItem(key)||'[]');list.push({me:true,text,foto:pendingFoto});localStorage.setItem(key,JSON.stringify(list));user.kredity-=0.5;let users=JSON.parse(localStorage.getItem('spoznajma_users')||'[]');let i=users.findIndex(u=>u.id===user.id);if(i>-1){users[i].kredity=user.kredity;localStorage.setItem('spoznajma_users',JSON.stringify(users));}localStorage.setItem('spoznajma_user',JSON.stringify(user));renderCredits();inp.value='';pendingFoto=null;document.getElementById('fotoPreview').innerHTML='';loadMsgs();}
+function doPay(){user.kredity+=selectedPkg.kr;let users=JSON.parse(localStorage.getItem('spoznajma_users')||'[]');let i=users.findIndex(u=>u.id===user.id);if(i>-1){users[i].kredity=user.kredity;localStorage.setItem('spoznajma_users',JSON.stringify(users));}localStorage.setItem('spoznajma_user',JSON.stringify(user));renderCredits();document.getElementById('payModal').classList.remove('open');alert(`Pripísané ${selectedPkg.kr} kr`);}
 const EMOJIS=['😊','😍','😘','❤️','🔥','😏','💋','🥰','😂','🤩','😈','👅','💦','🍑','🍒','😋','😉','😜'];
 function renderEmoji(){const ep=document.getElementById('emojiPicker');ep.innerHTML='';EMOJIS.forEach(e=>{const s=document.createElement('div');s.className='emoji';s.innerText=e;s.onclick=()=>{document.getElementById('msgInput').value+=e;};ep.appendChild(s);});}
 function toggleEmoji(){document.getElementById('emojiPicker').classList.toggle('open')}
