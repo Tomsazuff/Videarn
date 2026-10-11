@@ -3,101 +3,71 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Moderátorka V7 BIELA</title>
+<title>Moderátorka NOVA BIELA</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
-body{background:#fff;color:#222}
-.login{position:fixed;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px}
-.box{width:100%;max-width:360px;background:#fff;padding:20px;border:1px solid #eee;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.1)}
-input,textarea{width:100%;padding:14px;margin:6px 0;border:2px solid #ddd;border-radius:12px;font-size:16px;background:#fff;color:#222}
-button{width:100%;padding:14px;border:none;border-radius:12px;font-weight:900;cursor:pointer;margin-top:8px;font-size:16px}
+body{margin:0;background:#fff;color:#222;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:15px}
+.box{width:100%;max-width:360px;background:#fff;border:1px solid #eee;border-radius:20px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+input{width:100%;padding:14px;margin:6px 0;border:2px solid #ddd;border-radius:12px;font-size:16px;box-sizing:border-box}
+button{width:100%;padding:14px;border:none;border-radius:12px;font-weight:900;font-size:16px;margin-top:8px;cursor:pointer}
 .pink{background:#ff2a6d;color:#fff}
 .green{background:#2ecc71;color:#fff}
-.gray{background:#eee;color:#333}
-.top{height:50px;border-bottom:2px solid #ff2a6d;display:flex;justify-content:space-between;align-items:center;padding:0 12px;background:#fff;position:fixed;top:0;left:0;right:0;z-index:10}
-.layout{margin-top:50px;display:flex;height:calc(100vh - 50px)}
-.left{width:100px;background:#fafafa;border-right:1px solid #eee;overflow:auto}
-.mid{flex:1;display:flex;flex-direction:column;background:#fff}
-.user{padding:10px;border-bottom:1px solid #eee;cursor:pointer;background:#fff}
-.user.active{background:#ffe4ea;border-left:4px solid #ff2a6d}
-.chat{flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:8px}
-.bub{max-width:85%;padding:10px 12px;border-radius:14px;font-size:14px}
-.bub.me{background:#f1f1f1;align-self:flex-start}
-.bub.baba{background:#ff2a6d;color:#fff;align-self:flex-end}
+.gray{background:#eee;color:#333;width:auto;padding:8px 12px;font-size:13px;margin:3px;display:inline-block}
+.dash{text-align:center}
 </style>
 </head>
 <body>
 
-<div id="loginPage" class="login">
-<div class="box" id="loginBox">
-<h2 style="color:#ff2a6d">💋 Login V7 BIELA</h2>
-<input id="m" placeholder="meno: rene">
-<input id="h" type="password" placeholder="heslo: rene123">
-<button class="pink" onclick="login()">PRIHLÁSIŤ SA</button>
-<div id="err" style="color:red;margin-top:8px;font-size:13px"></div>
-<div style="display:flex;gap:6px;margin-top:10px">
+<div id="login" class="box">
+<h2 style="color:#ff2a6d;margin:0">💋 Moderátorka</h2>
+<p style="color:#888;font-size:13px;margin:4px 0 16px">NOVA BIELA - bez chlapov</p>
+<input id="m" placeholder="meno">
+<input id="h" type="password" placeholder="heslo">
+<button class="pink" onclick="login()">PRIHLÁSIŤ</button>
+<p id="err" style="color:red;font-size:13px"></p>
+<div style="margin-top:10px">
 <button class="gray" onclick="fill('rene')">rene</button>
 <button class="gray" onclick="fill('nikol')">nikol</button>
 <button class="gray" onclick="fill('tomas')">tomas</button>
 </div>
-<hr style="margin:14px 0">
-<div style="background:#f0fff4;border:1px solid #2ecc71;border-radius:12px;padding:12px">
-<b style="color:#2ecc71">+ Nová moderátorka</b>
-<button class="green" onclick="showReg()">REGISTROVAŤ NOVÚ</button>
-</div>
-<div style="font-size:11px;color:#888;margin-top:10px">Existujú: <span id="list" style="color:#222;font-weight:800"></span></div>
+<hr style="margin:16px 0;border:none;border-top:1px solid #eee">
+<button class="green" onclick="showReg()">+ REGISTROVAŤ NOVÚ</button>
+<div style="font-size:11px;color:#888;margin-top:8px">Existujú: <span id="list"></span></div>
 </div>
 
-<div class="box" id="regBox" style="display:none">
-<h2 style="color:#2ecc71">Registrácia</h2>
+<div id="reg" class="box" style="display:none">
+<h2 style="color:#2ecc71">Nová moderátorka</h2>
 <input id="rm" placeholder="meno napr zuzana">
-<input id="rh" placeholder="heslo napr zuzana123">
+<input id="rh" placeholder="heslo">
 <input id="rh2" placeholder="heslo znova">
-<button class="green" onclick="reg()">VYTVORIŤ ÚČET</button>
-<button class="gray" onclick="showLogin()">Späť na login</button>
-<div id="rerr" style="margin-top:8px;font-size:13px"></div>
-</div>
+<button class="green" onclick="reg()">VYTVORIŤ</button>
+<button class="gray" style="width:100%;margin-top:10px" onclick="showLogin()">Späť</button>
+<p id="rerr" style="font-size:13px"></p>
 </div>
 
-<div id="app" style="display:none">
-<div class="top"><b style="color:#ff2a6d">V7 BIELA</b><span><b id="who"></b> <button class="gray" style="width:auto;padding:6px 10px;margin-left:8px" onclick="location.reload()">Out</button></span></div>
-<div class="layout">
-<div class="left">
-<div style="padding:8px;font-weight:800;font-size:11px;background:#f5f5f5">CHLAPI <span id="cnt"></span></div>
-<div id="uList"></div>
-<button class="gray" style="margin:6px;width:88px;font-size:12px" onclick="addTest()">+Test</button>
-<button class="gray" style="margin:6px;width:88px;font-size:12px;background:#ffcccc" onclick="clearAll()">Vymazať</button>
+<div id="app" class="box dash" style="display:none">
+<h2 id="welcome"></h2>
+<p style="color:#888">Si prihlásená</p>
+<div style="margin-top:20px;display:flex;flex-direction:column;gap:10px">
+<button class="pink" onclick="alert('Tu pridáme čo chceš - chat, profil, atd.')">Začať</button>
+<button class="gray" style="width:100%" onclick="location.reload()">Odhlásiť</button>
 </div>
-<div class="mid">
-<div style="padding:8px;background:#f5f5f5;font-weight:800;font-size:12px" id="chatTitle">Klikni na chlapa vľavo</div>
-<div class="chat" id="chatBox"></div>
-<div style="padding:8px;border-top:1px solid #eee;background:#fafafa">
-<textarea id="msgIn" rows="3" placeholder="Správa ako baba..."></textarea>
-<button class="pink" onclick="send()">Odoslať 💋</button>
-</div>
-</div>
+<div style="margin-top:20px;padding:12px;background:#f9f9f9;border-radius:12px;font-size:12px;color:#888">
+Biela verzia - čistá<br>
+Pripravená na nový dizajn<br>
+Bez chlapov
 </div>
 </div>
 
 <script>
-const DEF={rene:{h:'rene123',maj:true},nikol:{h:'nikol123',maj:false},tomas:{h:'tomas',maj:false}};
-function getMods(){try{let a=JSON.parse(localStorage.getItem('moderatori')||'{}'),b=JSON.parse(localStorage.getItem('mods')||'{}'),m={...DEF};Object.keys(a).forEach(k=>{if(a[k].heslo)m[k]={h:a[k].heslo,maj:!!a[k].jeMajitel};else if(a[k].h)m[k]=a[k]});Object.keys(b).forEach(k=>{m[k]=b[k]});return m}catch(e){return DEF}}
-function saveMod(k,v){let s=JSON.parse(localStorage.getItem('mods')||'{}');s[k]=v;localStorage.setItem('mods',JSON.stringify(s));updateList()}
-function fill(n){let mods=getMods();document.getElementById('m').value=n;document.getElementById('h').value=mods[n]?mods[n].h:n+'123'}
-function updateList(){let el=document.getElementById('list');if(el)el.innerText=Object.keys(getMods()).join(', ')}
-function showReg(){document.getElementById('loginBox').style.display='none';document.getElementById('regBox').style.display='block'}
-function showLogin(){document.getElementById('regBox').style.display='none';document.getElementById('loginBox').style.display='block';updateList()}
-function reg(){let m=document.getElementById('rm').value.toLowerCase().trim(),h1=document.getElementById('rh').value.trim(),h2=document.getElementById('rh2').value.trim(),e=document.getElementById('rerr');if(!m||!h1){e.style.color='red';e.innerText='Vyplň meno a heslo';return}if(h1!==h2){e.style.color='red';e.innerText='Heslá sa nezhodujú';return}if(getMods()[m]){e.style.color='red';e.innerText='Už existuje';return}saveMod(m,{h:h1,maj:false});e.style.color='green';e.innerText='Vytvorená: '+m;setTimeout(()=>{showLogin();document.getElementById('m').value=m;document.getElementById('h').value=h1},800)}
-let JA=null,SEL=null;
-function login(){let m=document.getElementById('m').value.toLowerCase().trim(),h=document.getElementById('h').value.trim(),mods=getMods(),e=document.getElementById('err');if(!mods[m]||mods[m].h!==h){e.innerText='Zlé heslo! Skús: '+Object.keys(mods).join(', ');return}JA={meno:m,...mods[m]};document.getElementById('loginPage').style.display='none';document.getElementById('app').style.display='block';document.getElementById('who').innerText=m+(JA.maj?' 👑':'');render()}
-function getUsers(){try{let a=JSON.parse(localStorage.getItem('users')||'[]'),b=JSON.parse(localStorage.getItem('spoznajma_users')||'[]'),map={};[...a,...b].forEach(u=>{let k=u.id||u.meno;if(!map[k])map[k]=u});return Object.values(map)}catch(e){return[]}}
-function saveUsers(u){localStorage.setItem('users',JSON.stringify(u));localStorage.setItem('spoznajma_users',JSON.stringify(u))}
-function render(){let users=getUsers(),keys=Object.keys(getMods());users.forEach((u,i)=>{if(!u.assigned&&!u.assignedTo)u.assigned=keys[i%keys.length];if(u.assignedTo&&!u.assigned)u.assigned=u.assignedTo});saveUsers(users);let zobraz=JA.maj?users:users.filter(x=>(x.assigned||x.assignedTo)===JA.meno);document.getElementById('cnt').innerText='('+zobraz.length+')';let list=document.getElementById('uList');list.innerHTML='';zobraz.slice().reverse().forEach(u=>{let id=u.id||u.meno;let div=document.createElement('div');div.className='user'+(SEL===id?' active':'');div.innerHTML='<b>'+u.meno+'</b><br><small style=color:#888>'+(u.assigned||'')+'</small>';div.onclick=()=>{SEL=id;render();renderChat();};list.appendChild(div)})}
-function renderChat(){if(!SEL)return;let u=getUsers().find(x=>(x.id||x.meno)===SEL);if(!u)return;document.getElementById('chatTitle').innerText=u.meno+' -> '+(u.assigned||'');let box=document.getElementById('chatBox');box.innerHTML='';(u.messages||[]).forEach(m=>{let d=document.createElement('div');d.className='bub '+(m.from==='baba'?'baba':'me');d.innerText=m.text;box.appendChild(d)});box.scrollTop=box.scrollHeight}
-function send(){if(!SEL)return alert('Klikni na chlapa VĽAVO!');let t=document.getElementById('msgIn').value.trim();if(!t)return;let users=getUsers(),u=users.find(x=>(x.id||x.meno)===SEL);if(!u.messages)u.messages=[];u.messages.push({from:'baba',text:t,time:Date.now()});saveUsers(users);document.getElementById('msgIn').value='';renderChat()}
-function addTest(){let users=getUsers();if(users.length===0)users=[{id:'1',meno:'Peter',assigned:'rene',messages:[{from:'me',text:'Ahoj'}]},{id:'2',meno:'Ján',assigned:'nikol',messages:[{from:'me',text:'Čau'}]},{id:'3',meno:'Fero',assigned:'tomas',messages:[]}];else users.push({id:Date.now().toString(),meno:'Test'+users.length,assigned:Object.keys(getMods())[users.length%Object.keys(getMods()).length],messages:[]});saveUsers(users);render()}
-function clearAll(){if(confirm('Vymazať všetkých chlapov?')){localStorage.setItem('users','[]');localStorage.setItem('spoznajma_users','[]');render()}}
-updateList();
+var mods={rene:'rene123',nikol:'nikol123',tomas:'tomas'};
+var saved=JSON.parse(localStorage.getItem('mods_new')||'{}');for(var k in saved)mods[k]=saved[k];
+function upd(){document.getElementById('list').innerText=Object.keys(mods).join(', ')}
+function fill(n){document.getElementById('m').value=n;document.getElementById('h').value=mods[n]||''}
+function showReg(){document.getElementById('login').style.display='none';document.getElementById('reg').style.display='block'}
+function showLogin(){document.getElementById('reg').style.display='none';document.getElementById('login').style.display='block';upd()}
+function login(){var m=document.getElementById('m').value.toLowerCase().trim();var h=document.getElementById('h').value.trim();if(mods[m]&&mods[m]==h){document.getElementById('login').style.display='none';document.getElementById('reg').style.display='none';document.getElementById('app').style.display='block';document.getElementById('welcome').innerText='Vitaj '+m}else{document.getElementById('err').innerText='Zlé heslo - existujú: '+Object.keys(mods).join(', ')}}
+function reg(){var m=document.getElementById('rm').value.toLowerCase().trim();var h1=document.getElementById('rh').value.trim();var h2=document.getElementById('rh2').value.trim();var e=document.getElementById('rerr');if(!m||!h1){e.style.color='red';e.innerText='Vyplň';return}if(h1!=h2){e.style.color='red';e.innerText='Heslá sa nezhodujú';return}if(mods[m]){e.style.color='red';e.innerText='Už existuje';return}mods[m]=h1;var s=JSON.parse(localStorage.getItem('mods_new')||'{}');s[m]=h1;localStorage.setItem('mods_new',JSON.stringify(s));e.style.color='green';e.innerText='Vytvorená '+m;setTimeout(function(){showLogin();fill(m)},700)}
+upd();
 </script>
 </body>
 </html>
