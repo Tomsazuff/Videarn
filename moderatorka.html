@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Moderátorka CLOUD - 2 loginy - Kolotoč</title>
+<title>Moderátorka CLOUD - 2 loginy - Kolotoč - FIX</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
 body{background:#0a0a0a;color:#fff;height:100vh;display:flex;flex-direction:column;overflow:hidden}
@@ -22,7 +22,7 @@ body{background:#0a0a0a;color:#fff;height:100vh;display:flex;flex-direction:colu
 .user img{width:44px;height:44px;border-radius:50%;object-fit:cover;background:#222}
 .small{font-size:10px;color:#888}
 .chat{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
-.bub{max-width:78%;padding:8px 12px;border-radius:14px;font-size:13px}
+.bub{max-width:78%;padding:8px 12px;border-radius:14px;font-size:13px;word-break:break-word}
 .bub.me{background:#2a2a2a;align-self:flex-start}
 .bub.baba{background:#ff2a6d;align-self:flex-end}
 .bub i{font-size:9px;opacity:.7;display:block;margin-bottom:2px}
@@ -34,23 +34,21 @@ body{background:#0a0a0a;color:#fff;height:100vh;display:flex;flex-direction:colu
 </style>
 </head>
 <body>
-
 <div id="login" class="login">
 <div class="login-box">
-<h3 style="color:#ff2a6d;margin-bottom:10px">💋 Prihlásenie</h3>
+<h3 style="color:#ff2a6d;margin-bottom:10px">💋 Prihlásenie - FIX</h3>
 <input id="modMeno" placeholder="rene alebo nikol">
 <input id="modHeslo" type="password" placeholder="heslo">
-<button class="btn stats" style="width:100%;margin-top:12px;padding:10px" onclick="loginMod()">Prihlásiť sa</button>
+<button class="btn stats" style="width:100%;margin-top:12px;padding:12px;font-size:14px" onclick="loginMod()">Prihlásiť sa</button>
 <div class="small" style="margin-top:12px;line-height:1.4">
-<b>rene / rene123</b> = majiteľ - vidí VŠETKO + 📊 STATS<br>
-<b>nikol / nikol123</b> = moderátorka - vidí len svojich chlapov, BEZ stats<br><br>
-Obe píšete ako 1 žena - chlap vidí len Veronika, nie vaše mená.
+<b>rene / rene123</b> = majiteľ - vidí VŠETKO + STATS<br>
+<b>nikol / nikol123</b> = moderátorka - vidí len svojich chlapov, BEZ stats
+</div>
+<div id="loginError" style="color:#ff2a6d;font-size:12px;margin-top:8px;display:none"></div>
 </div>
 </div>
-</div>
-
 <div class="topbar">
-<div style="font-weight:900;color:#ff2a6d">💋 MODERÁTORKA KOLOTOČ</div>
+<div style="font-weight:900;color:#ff2a6d">💋 MODERÁTORKA KOLOTOČ - FIX</div>
 <div class="baby-bar" id="babyBar"></div>
 <div style="display:flex;gap:8px;align-items:center">
 <span id="who" class="small" style="font-weight:800"></span>
@@ -58,7 +56,6 @@ Obe píšete ako 1 žena - chlap vidí len Veronika, nie vaše mená.
 <button class="btn" onclick="location.reload()">Odhlásiť</button>
 </div>
 </div>
-
 <div class="main">
 <div class="left">
 <div class="head"><b id="leftTitle">👨 Chlapi</b><span id="cnt" class="small"></span></div>
@@ -69,26 +66,26 @@ Obe píšete ako 1 žena - chlap vidí len Veronika, nie vaše mená.
 <div class="head"><div><b id="chatTitle">Vyber chlapa</b><div class="small" id="assignInfo"></div></div></div>
 <div class="chat" id="chatBox"></div>
 <div style="padding:8px;background:#151515;border-top:1px solid #222">
-<textarea id="msgIn" rows="2" style="width:100%;background:#222;border:1px solid #333;color:#fff;border-radius:10px;padding:8px;font-size:13px" placeholder="Píšeš ako Veronika... chlap nevidí tvoje meno, len Veronika"></textarea>
+<textarea id="msgIn" rows="2" style="width:100%;background:#222;border:1px solid #333;color:#fff;border-radius:10px;padding:8px;font-size:13px" placeholder="Píšeš ako Veronika..."></textarea>
 <button style="background:#ff2a6d;color:#fff;border:none;padding:10px;border-radius:10px;margin-top:6px;width:100%;font-weight:900;cursor:pointer" onclick="send()">Odoslať ako Veronika → chlapovi</button>
-<div class="small" style="text-align:center;margin-top:4px">Chlap uvidí len "Veronika", interne vidíš kto písal ty / Nikol</div>
 </div>
 </div>
 <div class="right">
 <div style="padding:12px;text-align:center;border-bottom:1px solid #222">
 <img id="babaFoto" src="1.jpg" style="width:90px;height:90px;border-radius:50%;border:3px solid #ff2a6d" onerror="this.src='https://via.placeholder.com/90'">
 <div id="babaName" style="font-weight:900;margin-top:4px">Veronika</div>
-<div class="small">Píšeš ako 1 žena - chlap nevie že ste 2</div>
 </div>
 <div style="padding:8px">
-<b class="small">📓 Kto písal ako Veronika (len pre vás)</b>
-<div id="internalLog" style="font-size:10px;color:#aaa;max-height:320px;overflow:auto;margin-top:6px;line-height:1.4"></div>
+<b class="small">📓 Kto písal ako Veronika</b>
+<div id="internalLog" style="font-size:10px;color:#aaa;max-height:320px;overflow:auto;margin-top:6px"></div>
+</div>
+<div style="padding:8px;border-top:1px solid #222;margin-top:10px">
+<b class="small">🧪 TEST</b><br>
+<button class="btn" style="margin-top:6px" onclick="addTestUsers()">+ Pridať 3 test chlapov</button>
 </div>
 </div>
 </div>
-
 <script>
-// === 2 LOGINY ===
 const MODS = {
   rene: {heslo:'rene123', jeMajitel:true, farba:'#ff2a6d', label:'René 👑 majiteľ'},
   nikol: {heslo:'nikol123', jeMajitel:false, farba:'#2ecc71', label:'Nikol moderátorka'}
@@ -100,13 +97,11 @@ const BABY=[
  {name:'Lenka', img:'4.jpg'},
  {name:'Petra', img:'5.jpg'}
 ]
-let selBaba=BABY[0];
-let selChlap=null;
-let ja=null;
-
+let selBaba=BABY[0]; let selChlap=null; let ja=null;
 function loginMod(){
  let m=document.getElementById('modMeno').value.toLowerCase().trim();
  let h=document.getElementById('modHeslo').value.trim();
+ let err=document.getElementById('loginError');
  if(MODS[m] && MODS[m].heslo===h){
   ja={meno:m,...MODS[m]};
   document.getElementById('login').style.display='none';
@@ -114,10 +109,9 @@ function loginMod(){
   document.getElementById('who').style.color=ja.farba;
   if(ja.jeMajitel) document.getElementById('statsBtn').style.display='block';
   document.getElementById('leftTitle').innerText= ja.jeMajitel? '👨 Všetci chlapi (vidíš všetko)': '👨 Moji chlapi (kolotoč)';
-  renderBaby(); renderUsers();
- } else alert('Zlé meno/heslo! rene/rene123 alebo nikol/nikol123');
+  err.style.display='none'; renderBaby(); renderUsers();
+ } else { err.style.display='block'; err.innerText='Zlé meno/heslo! rene / rene123 alebo nikol / nikol123'; }
 }
-
 function renderBaby(){
  let bar=document.getElementById('babyBar'); bar.innerHTML='';
  BABY.forEach(b=>{
@@ -128,65 +122,64 @@ function renderBaby(){
  })
  document.getElementById('babaFoto').src=selBaba.img; document.getElementById('babaName').innerText=selBaba.name;
 }
-
-function getUsers(){return JSON.parse(localStorage.getItem('spoznajma_users')||'[]');}
-function getMsgs(id,baba){return JSON.parse(localStorage.getItem(`msgs_${id}_${baba}`)||'[]');}
-
-function renderUsers(){
+function getUsers(){try{return JSON.parse(localStorage.getItem('spoznajma_users')||'[]')}catch(e){return []}}
+function getMsgs(id,baba){try{return JSON.parse(localStorage.getItem(`msgs_${id}_${baba}`)||'[]')}catch(e){return []}}
+function addTestUsers(){
  let users=getUsers();
- let modsList=Object.keys(MODS);
- users.forEach((u,i)=>{
-  if(!u.assignedTo){ u.assignedTo=modsList[i % modsList.length]; }
- });
+ if(users.length===0){
+  users=[
+   {id:'1', meno:'Peter', vek:28, mesto:'Bratislava', kredity:5, profilFoto:'https://via.placeholder.com/80', assignedTo:'rene'},
+   {id:'2', meno:'Ján', vek:32, mesto:'Košice', kredity:2, profilFoto:'https://via.placeholder.com/80', assignedTo:'nikol'},
+   {id:'3', meno:'Fero', vek:25, mesto:'Nitra', kredity:10, profilFoto:'https://via.placeholder.com/80', assignedTo:'rene'}
+  ];
+  localStorage.setItem('spoznajma_users', JSON.stringify(users));
+  localStorage.setItem('msgs_1_Veronika', JSON.stringify([{me:true,text:'Ahoj Veronika',time:'23:00'},{me:false,text:'Ahoj Peter 😊',time:'23:01',moderator:'rene'}]));
+  alert('Pridaní 3 test chlapi'); renderUsers();
+ } else alert('Už máš '+users.length+' chlapov');
+}
+function renderUsers(){
+ let users=getUsers(); let modsList=Object.keys(MODS);
+ users.forEach((u,i)=>{ if(!u.assignedTo){ u.assignedTo=modsList[i % modsList.length]; } });
  localStorage.setItem('spoznajma_users', JSON.stringify(users));
- let zobraz = ja.jeMajitel? users : users.filter(u=>u.assignedTo===ja.meno);
+ let zobraz = ja && ja.jeMajitel? users : users.filter(u=> ja? u.assignedTo===ja.meno : true);
  document.getElementById('cnt').innerText=`${zobraz.length} / ${users.length}`;
  let list=document.getElementById('userList'); list.innerHTML='';
+ if(zobraz.length===0){ list.innerHTML='<div class="small" style="padding:20px;text-align:center">Žiadni chlapi - klikni vpravo "Pridať 3 test chlapov"</div>'; return; }
  zobraz.slice().reverse().forEach(u=>{
-  let chat=getMsgs(u.id, selBaba.name);
-  let last=chat[chat.length-1];
+  let chat=getMsgs(u.id, selBaba.name); let last=chat[chat.length-1];
   let d=document.createElement('div'); d.className='user'+(selChlap===u.id?' active':'');
-  d.innerHTML=`<img src="${u.profilFoto||'https://via.placeholder.com/80'}"><div style="flex:1"><b>${u.meno}</b> <span class="small">${u.vek}r ${u.mesto} • ${u.assignedTo} • ${u.kredity}kr</span><div class="small">${last?last.text.slice(0,28):'nový - čaká na prvú správu'}</div></div>`;
-  d.onclick=()=>{selChlap=u.id; renderUsers(); renderChat();}
-  list.appendChild(d);
+  d.innerHTML=`<img src="${u.profilFoto||'https://via.placeholder.com/80'}"><div style="flex:1"><b>${u.meno}</b> <span class="small">${u.vek}r ${u.mesto} • ${u.assignedTo} • ${u.kredity}kr</span><div class="small">${last?last.text.slice(0,28):'nový'}</div></div>`;
+  d.onclick=()=>{selChlap=u.id; renderUsers(); renderChat();} list.appendChild(d);
  })
 }
-
 function renderChat(){
- if(!selChlap){document.getElementById('chatBox').innerHTML='<div class="small" style="text-align:center;margin-top:30px">Vyber chlapa vľavo<br>Uvidíš celú históriu čo písala René aj Nikol ako 1 žena Veronika<br>Chlap nevidí vaše mená</div>'; return;}
- let u=getUsers().find(x=>x.id===selChlap);
+ if(!selChlap){document.getElementById('chatBox').innerHTML='<div class="small" style="text-align:center;margin-top:30px">Vyber chlapa vľavo</div>'; return;}
+ let u=getUsers().find(x=>x.id===selChlap); if(!u) return;
  document.getElementById('chatTitle').innerText=`${u.meno} ↔ ${selBaba.name}`;
- document.getElementById('assignInfo').innerText=`Priradený: ${u.assignedTo} | Teraz píše: ${ja.meno} ako ${selBaba.name} | Chlap vidí len ${selBaba.name}`;
- let chat=getMsgs(u.id, selBaba.name);
- let box=document.getElementById('chatBox'); box.innerHTML='';
- let log=document.getElementById('internalLog'); log.innerHTML='';
+ document.getElementById('assignInfo').innerText=`Priradený: ${u.assignedTo} | Teraz píše: ${ja.meno} ako ${selBaba.name}`;
+ let chat=getMsgs(u.id, selBaba.name); let box=document.getElementById('chatBox'); box.innerHTML=''; let log=document.getElementById('internalLog'); log.innerHTML='';
  chat.forEach(m=>{
   let d=document.createElement('div'); d.className='bub '+(m.me?'me':'baba');
   d.innerHTML=`<i>${m.me?u.meno:selBaba.name} ${!m.me && m.moderator?` (písala ${m.moderator})`:''} • ${m.time||''}</i>${m.text}`;
-  box.appendChild(d);
-  if(!m.me) log.innerHTML+=`<div><b>${m.moderator||'?'}</b> ako ${selBaba.name} o ${m.time}: ${m.text.slice(0,40)}</div>`;
+  box.appendChild(d); if(!m.me) log.innerHTML+=`<div><b>${m.moderator||'?'}</b> o ${m.time}: ${m.text.slice(0,40)}</div>`;
  });
  box.scrollTop=box.scrollHeight;
 }
-
 function send(){
  let txt=document.getElementById('msgIn').value.trim(); if(!txt||!selChlap) return;
- let u=getUsers().find(x=>x.id===selChlap);
- let key=`msgs_${u.id}_${selBaba.name}`;
+ let u=getUsers().find(x=>x.id===selChlap); let key=`msgs_${u.id}_${selBaba.name}`;
  let chat=JSON.parse(localStorage.getItem(key)||'[]');
  chat.push({me:false, text:txt, time:new Date().toLocaleTimeString().slice(0,5), moderator:ja.meno, baba:selBaba.name});
- localStorage.setItem(key, JSON.stringify(chat));
- document.getElementById('msgIn').value=''; renderChat(); renderUsers();
+ localStorage.setItem(key, JSON.stringify(chat)); document.getElementById('msgIn').value=''; renderChat(); renderUsers();
 }
-
 function showStats(){
  if(!ja.jeMajitel){alert('STATS len pre majiteľa!'); return;}
  let users=getUsers(); let totK=users.reduce((s,u)=>s+(u.kredity||0),0);
- let platby=JSON.parse(localStorage.getItem('spoznajma_platby')||'[]');
- let totE=0; platby.forEach(p=>totE+=p.eur);
- alert(`📊 STATS - LEN MAJITEĽ René\n\nChlapov celkom: ${users.length}\nZ toho u René: ${users.filter(u=>u.assignedTo==='rene').length}\nZ toho u Nikol: ${users.filter(u=>u.assignedTo==='nikol').length}\n\nKreditov dokopy kúpili: ${totK} kr\n€ dokopy: ${totE}€\n\nToto vidíš len ty, Nikol nie!`);
+ alert(`📊 STATS - René\n\nChlapov: ${users.length}\nU René: ${users.filter(u=>u.assignedTo==='rene').length}\nU Nikol: ${users.filter(u=>u.assignedTo==='nikol').length}\nKreditov: ${totK}`);
 }
 renderBaby();
+document.getElementById('modMeno').addEventListener('keydown',e=>{if(e.key==='Enter'){document.getElementById('modHeslo').focus()}});
+document.getElementById('modHeslo').addEventListener('keydown',e=>{if(e.key==='Enter'){loginMod()}});
 document.getElementById('msgIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});
 </script>
 </body>
