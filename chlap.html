@@ -1,0 +1,45 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SpoznajMa</title>
+<style>
+body{margin:0;font-family:system-ui;background:#f5f5f7;display:flex;justify-content:center}
+.wrap{max-width:420px;width:100%;background:#fff;min-height:100vh}
+.login{padding:40px 24px} input{width:100%;padding:12px;border:1px solid #ddd;border-radius:12px;margin:8px 0}
+button{width:100%;padding:12px;background:#000;color:#fff;border-radius:12px;border:0;font-weight:600}
+.woman{display:flex;gap:12px;padding:12px;border-bottom:1px solid #eee;cursor:pointer}
+.woman img{width:64px;height:64px;border-radius:50%;object-fit:cover}
+.msg{padding:8px 12px;border-radius:16px;margin:6px 0;max-width:80%}.from-chlap{background:#000;color:#fff;margin-left:auto}.from-woman{background:#eee}
+#creditModal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:99}
+#creditBox{background:#fff;border-radius:20px;padding:20px;width:90%;max-width:380px}
+.pay{display:none;margin-top:12px;border-top:1px solid #eee;padding-top:12px}
+</style>
+</head><body>
+<div class="wrap" id="app"></div>
+<div id="creditModal"><div id="creditBox"></div></div>
+<script>
+const women=[
+{name:"Veronika",age:25,city:"Žilina",img:"photo4601789969971982571.jpeg",bio:"Rada turistika a káva."},
+{name:"Katka",age:26,city:"Nitra",img:"photo5055172290250326349.jpeg",bio:"Milujem knihy."},
+{name:"Simona",age:23,city:"Trnava",img:"photo406387286523374198.jpeg",bio:"Fitko a prechádzky."},
+{name:"Lenka",age:27,city:"Košice",img:"photo5592980688224903821.jpeg",bio:"Cestovanie."},
+{name:"Petra",age:24,city:"Bratislava",img:"photo111735083097883368.jpeg",bio:"Hory a foto."}
+];
+let chlap={name:"Marek 34 BA",credits:parseFloat(localStorage.getItem('chlap_credits')||'2'),selected:null};
+let live=JSON.parse(localStorage.getItem('spoznajma_live')||'{}');
+function saveLive(){localStorage.setItem('spoznajma_live',JSON.stringify(live));localStorage.setItem('chlap_credits',chlap.credits);}
+function renderLogin(){document.getElementById('app').innerHTML=`<div class=login><h2>SpoznajMa.sk</h2><input id=e placeholder=email><input id=p type=password placeholder=heslo><button onclick=login()>Prihlásiť sa</button><div id=err style=color:red></div></div>`;}
+function login(){let e=document.getElementById('e').value,p=document.getElementById('p').value;if(!e.includes('@')||p.length<3){document.getElementById('err').innerText='Zlý email alebo heslo';return;}localStorage.setItem('chlap_logged','1');localStorage.setItem('chlap_credits',localStorage.getItem('chlap_credits')||'2');chlap.credits=parseFloat(localStorage.getItem('chlap_credits'));renderList();}
+function renderList(){document.getElementById('app').innerHTML=`<div style="padding:12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee"><b>${chlap.name}</b><span>💌 Kredity: ${chlap.credits} (${chlap.credits*2} správ)</span></div>`+women.map((w,i)=>`<div class=woman onclick="openW(${i})"><img src="${w.img}"><div><b>${w.name} ${w.age}</b><div style="font-size:12px">${w.city}</div><div style="font-size:12px">${w.bio}</div></div></div>`).join('');}
+function openW(i){let w=women[i];chlap.selected=w.name;let msgs=(live[w.name]&&live[w.name][chlap.name])||[];document.getElementById('app').innerHTML=`<div style="padding:12px"><button onclick="renderList()">← Späť</button><div style="display:flex;gap:12px;margin:12px 0"><img src="${w.img}" style="width:80px;height:80px;border-radius:50%;object-fit:cover"><div><b>${w.name} ${w.age} ${w.city}</b><div>${w.bio}</div></div></div><div id=chat>${msgs.map(m=>`<div class="msg ${m.from=='chlap'?'from-chlap':'from-woman'}">${m.text}</div>`).join('')}</div><div style="display:flex;gap:8px"><input id=msg placeholder="Napíš správu..."><button onclick="sendMsg()" style="width:80px">Odoslať</button></div></div>`;}
+function sendMsg(){let t=document.getElementById('msg').value;if(!t)return;if(chlap.credits<0.5){showCredit();return;}let w=chlap.selected;if(!live[w])live[w]={};if(!live[w][chlap.name])live[w][chlap.name]=[];live[w][chlap.name].push({from:'chlap',text:t});chlap.credits-=0.5;saveLive();document.getElementById('msg').value='';openW(women.findIndex(x=>x.name==w));}
+function showCredit(){let m=document.getElementById('creditModal');m.style.display='flex';document.getElementById('creditBox').innerHTML=`<h3>Kúp si kredity - 1 kredit = 2 správy</h3>
+<div style="margin:8px 0;padding:8px;border:1px solid #ddd;border-radius:12px">5€ = 10kr = 20 správ <button onclick="openPay(5,10)" style="width:auto">Kúpiť</button></div>
+<div style="margin:8px 0;padding:8px;border:1px solid #ddd;border-radius:12px">10€ = 20+5% = 21kr = 42 správ <button onclick="openPay(10,21)" style="width:auto">Kúpiť</button></div>
+<div style="margin:8px 0;padding:8px;border:1px solid #ddd;border-radius:12px">20€ = 40+10% = 44kr = 88 správ <button onclick="openPay(20,44)" style="width:auto">Kúpiť</button></div>
+<div style="margin:8px 0;padding:8px;border:2px solid #000;border-radius:12px">50€ = 100+15% = 115kr = 230 správ ⭐ <button onclick="openPay(50,115)" style="width:auto">Kúpiť</button></div>
+<button onclick="document.getElementById('creditModal').style.display='none'" style="background:#eee;color:#000;margin-top:12px">Zavrieť</button><div id=payForm class=pay></div>`;}
+function openPay(euro,kr){document.getElementById('payForm').style.display='block';document.getElementById('payForm').innerHTML=`<h4>Platba ${euro}€ za ${kr} kreditov</h4><input placeholder="Číslo karty"><input placeholder="Meno na karte"><div style="display:flex;gap:8px"><input placeholder="MM/RR"><input placeholder="CVC"></div><input placeholder="Email"><button onclick="pay(${kr})">Zaplatiť ${euro}€ a získať ${kr} kreditov</button>`;}
+function pay(kr){chlap.credits+=kr;saveLive();document.getElementById('creditModal').style.display='none';renderList();}
+if(localStorage.getItem('chlap_logged'))renderList();else renderLogin();
+</script>
+</body></html>
