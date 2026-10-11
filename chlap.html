@@ -2,17 +2,15 @@
 <html lang="sk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SpoznajMa.sk</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif}
-body{background:#fff;color:#111}
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
+body{background:#fff}
 .header{position:sticky;top:0;background:#fff;border-bottom:1px solid #eee;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;z-index:50}
 .logo{font-weight:900;font-size:22px;color:#ff2a6d}
-.credits{background:#111;color:#fff;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer}
+.credits{background:#111;color:#fff;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:700}
 .hero{padding:18px 16px;text-align:center}
-.hero h1{font-size:26px;font-weight:900}
-.hero h1 span{color:#ff2a6d}
 .cta{margin:6px;background:#ff2a6d;color:#fff;padding:14px 22px;border-radius:28px;font-weight:800;border:none;cursor:pointer}
 .cta.sec{background:#fff;color:#111;border:1.5px solid #ddd}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px}
@@ -31,14 +29,13 @@ body{background:#fff;color:#111}
 .bubble img{width:180px;border-radius:10px;margin-top:8px;display:block}
 .input-area{background:#fff;border-top:1px solid #eee;padding:10px 12px}
 .input-row{display:flex;gap:8px}
-textarea{flex:1;min-height:46px;border:1.5px solid #ddd;border-radius:22px;padding:12px 14px;font-size:16px;outline:none}
+textarea{flex:1;min-height:46px;border:1.5px solid #ddd;border-radius:22px;padding:12px 14px;font-size:16px}
 .send-btn{background:#ff2a6d;color:#fff;border:none;padding:12px 18px;border-radius:22px;font-weight:800;cursor:pointer}
 .tool-btn{background:#f2f2f2;border:1px solid #e5e5e5;padding:7px 14px;border-radius:20px;font-size:13px;cursor:pointer}
 .emoji-picker{display:none;grid-template-columns:repeat(7,1fr);gap:6px;padding:8px;border:1px solid #eee;border-radius:12px;margin-top:8px}
 .emoji-picker.open{display:grid}
-.emoji{font-size:22px;text-align:center;padding:6px;cursor:pointer}
-input.card-inp{width:100%;padding:12px 14px;border:1.5px solid #ddd;border-radius:12px;margin-top:10px;font-size:15px;outline:none}
-#payModal{position:fixed;inset:0;background:rgba(0,0,0,.68);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
+input.card-inp{width:100%;padding:12px 14px;border:1.5px solid #ddd;border-radius:12px;margin-top:10px;font-size:15px}
+#payModal{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
 #payModal.open{display:flex}
 .pay-box{background:#fff;width:100%;max-width:420px;border-radius:18px;padding:20px;max-height:92vh;overflow:auto}
 .packages{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
@@ -49,34 +46,29 @@ input.card-inp{width:100%;padding:12px 14px;border:1.5px solid #ddd;border-radiu
 </head>
 <body>
 <div class="header"><div class="logo">💋 SPOZNAJMA.SK</div><div class="credits" onclick="openLogin()">💰 <span id="cr">0</span> kr • <span id="userName">Prihlásiť</span></div></div>
-<div class="hero"><h1>Horúce baby z okolia <span>čakajú</span></h1><button class="cta" onclick="openRegister()">REGISTRÁCIA - 2 kr ZDARMA</button><button class="cta sec" onclick="openLogin()">PRIHLÁSENIE</button><div style="background:#fdf2f5;border:1px dashed #ffb3c8;border-radius:12px;padding:12px;margin:10px 16px;font-size:13px">✅ Ráno odídeš, večer sa vrátiš? Prihlás sa menom+heslom!<br>💬 0.5 kr / správa. Zadarmo 2 kr = 4 správy. Potom len po zaplatení kartou.<br><small style="font-size:11px;color:#888">moderovaný chat - zábavná služba 18+</small></div></div>
+<div class="hero"><h1>Horúce baby čakajú</h1><button class="cta" onclick="openRegister()">REGISTRÁCIA - 2 kr ZDARMA</button><button class="cta sec" onclick="openLogin()">PRIHLÁSENIE</button><div style="background:#fdf2f5;border:1px dashed #ffb3c8;border-radius:12px;padding:12px;margin:10px 16px;font-size:13px">💬 0.5 kr / správa. Zadarmo 2 kr = 4 správy. Potom len po zaplatení kartou.</div></div>
 <div class="grid" id="grid"></div>
 
-<div id="regModal" class="modal"><div style="background:#fff;width:100%;max-width:380px;border-radius:18px;padding:20px"><h3>Registrácia - 2 kr ZDARMA</h3><input id="rMeno" placeholder="Meno" class="card-inp"><input id="rVek" placeholder="Vek" type="number" class="card-inp"><input id="rMesto" placeholder="Mesto" class="card-inp"><input id="rHeslo" placeholder="Heslo" type="password" class="card-inp"><label style="display:flex;gap:8px;margin-top:12px;font-size:13px"><input type="checkbox" id="r18"> Mám 18+</label><button onclick="doRegister()" style="width:100%;margin-top:14px;background:#ff2a6d;color:#fff;border:none;padding:13px;border-radius:12px;font-weight:900">Registrovať + 2 kr</button><button onclick="closeModals()" style="width:100%;margin-top:8px;background:#eee;border:none;padding:11px;border-radius:12px">Zrušiť</button></div></div>
+<div id="regModal" class="modal"><div style="background:#fff;width:100%;max-width:380px;border-radius:18px;padding:20px"><h3>Registrácia - 2 kr</h3><input id="rMeno" placeholder="Meno" class="card-inp"><input id="rVek" placeholder="Vek" type="number" class="card-inp"><input id="rMesto" placeholder="Mesto" class="card-inp"><input id="rHeslo" placeholder="Heslo" type="password" class="card-inp"><label style="display:flex;gap:8px;margin-top:12px;font-size:13px"><input type="checkbox" id="r18"> Mám 18+</label><button onclick="doRegister()" style="width:100%;margin-top:14px;background:#ff2a6d;color:#fff;border:none;padding:13px;border-radius:12px;font-weight:900">Registrovať + 2 kr</button><button onclick="closeModals()" style="width:100%;margin-top:8px;background:#eee;border:none;padding:11px;border-radius:12px">Zrušiť</button></div></div>
 <div id="loginModal" class="modal"><div style="background:#fff;width:100%;max-width:380px;border-radius:18px;padding:20px"><h3>Prihlásenie</h3><input id="lMeno" placeholder="Meno" class="card-inp"><input id="lHeslo" placeholder="Heslo" type="password" class="card-inp"><button onclick="doLogin()" style="width:100%;margin-top:14px;background:#111;color:#fff;border:none;padding:13px;border-radius:12px;font-weight:900">Prihlásiť</button><button onclick="closeModals()" style="width:100%;margin-top:8px;background:#eee;border:none;padding:11px;border-radius:12px">Zrušiť</button></div></div>
-
-<div id="chatModal"><div class="chat-head"><img id="chatImg" src="" style="width:42px;height:42px;border-radius:50%"><div><div id="chatName" style="font-weight:800"></div><div style="font-size:12px;color:#2ecc71">● online</div></div><button onclick="closeChat()" style="margin-left:auto">✕</button></div><div class="messages" id="msgs"></div><div class="input-area"><div class="input-row"><textarea id="msgInput" placeholder="Napíš..."></textarea><button class="send-btn" onclick="sendMsg()">Odoslať • 0.5</button></div><div style="display:flex;gap:8px;margin-top:10px"><button class="tool-btn" onclick="toggleEmoji()">😊 Smajlíky</button><label class="tool-btn">📷 Foto<input id="fotoInp" type="file" accept="image/*" style="display:none"></label></div><div class="emoji-picker" id="emojiPicker"></div><div id="fotoPreview"></div></div></div>
+<div id="chatModal"><div class="chat-head"><img id="chatImg" src="" style="width:42px;height:42px;border-radius:50%"><div><div id="chatName" style="font-weight:800"></div><div style="font-size:12px;color:#2ecc71">● online</div></div><button onclick="closeChat()" style="margin-left:auto">✕</button></div><div class="messages" id="msgs"></div><div class="input-area"><div class="input-row"><textarea id="msgInput" placeholder="Napíš..."></textarea><button class="send-btn" onclick="sendMsg()">Odoslať • 0.5</button></div><div style="display:flex;gap:8px;margin-top:10px"><button class="tool-btn" onclick="toggleEmoji()">😊</button><label class="tool-btn">📷<input id="fotoInp" type="file" accept="image/*" style="display:none"></label></div><div class="emoji-picker" id="emojiPicker"></div><div id="fotoPreview"></div></div></div>
 
 <div id="payModal">
 <div class="pay-box">
 <h2>🔒 Nemáš kredity</h2>
-<p class="small">Minul si 2 kr zdarma (4 správy). Pre pokračovanie musíš zaplatiť kartou.</p>
+<p class="small">Minul si 2 kr zdarma. Pre pokračovanie musíš zaplatiť kartou. 0.5 kr / správa</p>
 <div class="packages" id="pkgs"></div>
 
 <div style="margin-top:14px;background:#f7f7f7;padding:14px;border-radius:14px;border:1px solid #eee">
-<div style="font-weight:900;font-size:15px">💳 Platba bank kartou - Stripe</div>
-<div class="small">Zadaj údaje z karty. Po úspešnej platbe sa kredity pripíšu automaticky a budeš pokračovať v chate.</div>
-
+<div style="font-weight:900;font-size:15px">💳 Platba bank kartou</div>
+<div class="small">Zadaj údaje - po zaplatení sa kredity pripíšu automaticky</div>
 <input placeholder="Meno na karte" class="card-inp" id="cardName">
 <input placeholder="Číslo karty 4242 4242 4242 4242" class="card-inp" id="cardNum">
-<div style="display:flex;gap:8px">
-<input placeholder="MM/RR" class="card-inp" id="cardExp">
-<input placeholder="CVC" class="card-inp" id="cardCvc">
-</div>
-<div class="small" style="margin-top:8px;text-align:center">🔐 Bezpečná platba • Šifrované • Žiadne predplatné</div>
+<div style="display:flex;gap:8px"><input placeholder="MM/RR" class="card-inp"><input placeholder="CVC" class="card-inp"></div>
+<div class="small" style="text-align:center;margin-top:8px">🔐 Bezpečná platba • Stripe</div>
 </div>
 
-<button id="payBtn" onclick="doPay()" style="width:100%;margin-top:14px;background:#111;color:#fff;border:none;padding:14px;border-radius:12px;font-weight:900">Zaplatit kartou a pokračovať v chate</button>
+<button id="payBtn" onclick="doPay()" style="width:100%;margin-top:14px;background:#111;color:#fff;border:none;padding:14px;border-radius:12px;font-weight:900">Zaplatit kartou a pokračovať</button>
 <button onclick="document.getElementById('payModal').classList.remove('open')" style="width:100%;margin-top:10px;background:#eee;border:none;padding:11px;border-radius:12px">Zrušiť</button>
 </div>
 </div>
@@ -89,30 +81,29 @@ const BABY=[
 {name:'Lenka',vek:27,mesto:'Košice',img:'4.jpg'},
 {name:'Petra',vek:24,mesto:'Bratislava',img:'5.jpg'}
 ];
-const BALIKY=[{eur:5,kr:10,label:'5€ = 10 kr'},{eur:10,kr:21,label:'10€ = 21 kr',bonus:'+5%'},{eur:20,kr:44,label:'20€ = 44 kr',bonus:'+10%'},{eur:50,kr:115,label:'50€ = 115 kr',bonus:'+15%'}];
+const BALIKY=[{eur:5,kr:10},{eur:10,kr:21,bonus:'+5%'},{eur:20,kr:44,bonus:'+10%'},{eur:50,kr:115,bonus:'+15%'}];
 let user=JSON.parse(localStorage.getItem('spoznajma_user')||'null');
 let currentBaba=null;let selectedPkg=BALIKY[1];let pendingFoto=null;
 function closeModals(){document.getElementById('regModal').classList.remove('open');document.getElementById('loginModal').classList.remove('open');}
 function openRegister(){document.getElementById('regModal').classList.add('open')}
 function openLogin(){document.getElementById('loginModal').classList.add('open')}
 function renderCredits(){document.getElementById('cr').innerText=user?user.kredity:0;document.getElementById('userName').innerText=user?user.meno:'Prihlásiť'}
-function renderGrid(){const g=document.getElementById('grid');g.innerHTML='';BABY.forEach((b,i)=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<img src="${b.img}" onerror="this.src='https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400'"><div style="padding:10px"><b>${b.name} ${b.vek}</b><div style="font-size:13px;color:#777">${b.mesto}</div><button class="btn-pisat" onclick="openChat(${i})">Písať • 0.5 💰</button></div>`;g.appendChild(d);})}
+function renderGrid(){const g=document.getElementById('grid');g.innerHTML='';BABY.forEach((b,i)=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<img src="${b.img}" onerror="this.src='https://via.placeholder.com/300'"><div style="padding:10px"><b>${b.name} ${b.vek}</b><div style="font-size:13px;color:#777">${b.mesto}</div><button class="btn-pisat" onclick="openChat(${i})">Písať • 0.5 💰</button></div>`;g.appendChild(d);})}
 function renderPackages(){const p=document.getElementById('pkgs');p.innerHTML='';BALIKY.forEach((b)=>{const div=document.createElement('div');div.className='pkg'+(selectedPkg.eur===b.eur?' active':'');div.innerHTML=`<div style="font-weight:900">${b.eur}€</div><div style="font-size:13px">${b.kr} kr</div>${b.bonus?`<div style="font-size:11px;color:#ff2a6d;font-weight:800">${b.bonus}</div>`:''}`;div.onclick=()=>{selectedPkg=b;renderPackages();document.getElementById('payBtn').innerText=`Zaplatit ${b.eur}€ - ${b.kr} kr kartou`};p.appendChild(div);});document.getElementById('payBtn').innerText=`Zaplatit ${selectedPkg.eur}€ - ${selectedPkg.kr} kr kartou`;}
-function doRegister(){const meno=document.getElementById('rMeno').value.trim();const vek=document.getElementById('rVek').value.trim();const mesto=document.getElementById('rMesto').value.trim();const heslo=document.getElementById('rHeslo').value.trim();if(!meno||!vek||!mesto||!heslo){alert('Vyplň všetko');return}if(!document.getElementById('r18').checked){alert('18+');return}let users=JSON.parse(localStorage.getItem('spoznajma_users')||'[]');if(users.find(u=>u.meno.toLowerCase()===meno.toLowerCase())){alert('Meno existuje');closeModals();openLogin();return}user={id:Date.now(),meno,vek,mesto,heslo,kredity:2};localStorage.setItem('spoznajma_user',JSON.stringify(user));users.push(user);localStorage.setItem('spoznajma_users',JSON.stringify(users));renderCredits();closeModals();alert('OK 2 kr ZDARMA = 4 správy');}
-function doLogin(){const meno=document.getElementById('lMeno').value.trim();const heslo=document.getElementById('lHeslo').value.trim();let users=JSON.parse(localStorage.getItem('spoznajma_users')||'[]');let found=users.find(u=>u.meno.toLowerCase()===meno.toLowerCase() && u.heslo===heslo);if(!found){alert('Zlé meno/heslo');return}user={...found};localStorage.setItem('spoznajma_user',JSON.stringify(user));renderCredits();closeModals();alert(`Vitaj ${user.meno}`);}
+function doRegister(){const meno=document.getElementById('rMeno').value.trim();const vek=document.getElementById('rVek').value.trim();const mesto=document.getElementById('rMesto').value.trim();const heslo=document.getElementById('rHeslo').value.trim();if(!meno||!vek||!mesto||!heslo){alert('Vyplň všetko');return}if(!document.getElementById('r18').checked){alert('18+');return}let users=JSON.parse(localStorage.getItem('spoznajma_users')||'[]');if(users.find(u=>u.meno.toLowerCase()===meno.toLowerCase())){alert('Meno existuje');closeModals();openLogin();return}user={id:Date.now(),meno,vek,mesto,heslo,kredity:2};localStorage.setItem('spoznajma_user',JSON.stringify(user));users.push(user);localStorage.setItem('spoznajma_users',JSON.stringify(users));renderCredits();closeModals();alert('OK 2 kr ZDARMA');}
+function doLogin(){const meno=document.getElementById('lMeno').value.trim();const heslo=document.getElementById('lHeslo').value.trim();let users=JSON.parse(localStorage.getItem('spoznajma_users')||'[]');let found=users.find(u=>u.meno.toLowerCase()===meno.toLowerCase() && u.heslo===heslo);if(!found){alert('Zlé meno/heslo');return}user={...found};localStorage.setItem('spoznajma_user',JSON.stringify(user));renderCredits();closeModals();}
 function openChat(idx){if(!user){openRegister();return}currentBaba=BABY[idx];document.getElementById('chatImg').src=currentBaba.img;document.getElementById('chatName').innerText=currentBaba.name;document.getElementById('chatModal').classList.add('open');loadMsgs();}
 function closeChat(){document.getElementById('chatModal').classList.remove('open')}
-function loadMsgs(){const msgs=document.getElementById('msgs');msgs.innerHTML='';const key=`msgs_${user.id}_${currentBaba.name}`;const list=JSON.parse(localStorage.getItem(key)||'[]');list.forEach(m=>{const div=document.createElement('div');div.className='bubble '+(m.me?'me':'her');div.innerHTML=`${m.text||''}${m.foto?`<img src="${m.foto}" style="width:180px;border-radius:10px;display:block;margin-top:6px">`:''}`;msgs.appendChild(div);});msgs.scrollTop=msgs.scrollHeight;}
+function loadMsgs(){const msgs=document.getElementById('msgs');msgs.innerHTML='';const key=`msgs_${user.id}_${currentBaba.name}`;const list=JSON.parse(localStorage.getItem(key)||'[]');list.forEach(m=>{const div=document.createElement('div');div.className='bubble '+(m.me?'me':'her');div.innerHTML=`${m.text||''}${m.foto?`<img src="${m.foto}">`:''}`;msgs.appendChild(div);});msgs.scrollTop=msgs.scrollHeight;}
 function sendMsg(){if(!user){openRegister();return}if(user.kredity<0.5){document.getElementById('payModal').classList.add('open');return}const inp=document.getElementById('msgInput');const text=inp.value.trim();if(!text &&!pendingFoto)return;const key=`msgs_${user.id}_${currentBaba.name}`;const list=JSON.parse(localStorage.getItem(key)||'[]');list.push({me:true,text,foto:pendingFoto});localStorage.setItem(key,JSON.stringify(list));user.kredity=Math.round((user.kredity-0.5)*10)/10;let users=JSON.parse(localStorage.getItem('spoznajma_users')||'[]');let i=users.findIndex(u=>u.id===user.id);if(i>-1){users[i].kredity=user.kredity;localStorage.setItem('spoznajma_users',JSON.stringify(users));}localStorage.setItem('spoznajma_user',JSON.stringify(user));renderCredits();inp.value='';pendingFoto=null;document.getElementById('fotoPreview').innerHTML='';loadMsgs();}
-
-// TVRDÝ PAYWALL - karta je tam, ale kredit sa pripíše až po Stripe
 function doPay(){
-  alert("🔒 PLATBA KARTOU\n\nBalík: "+selectedPkg.eur+"€ = "+selectedPkg.kr+" kreditov\n\nZadal si kartu - DEMO režim:\n\n❌ Kredit sa TERAZ NEPripíše!\n✅ Až keď napojíme Stripe, po zaplatení sa pripíše automaticky a budeš môcť písať ďalej.\n\nZatiaľ chat ostáva BLOKOVANÝ - po bonuse nepíše.");
+  const n=document.getElementById('cardName').value;
+  const c=document.getElementById('cardNum').value;
+  if(!n||!c){alert('Vyplň meno a číslo karty!');return}
+  alert('✅ Karta zadaná: '+selectedPkg.eur+'€ = '+selectedPkg.kr+' kr\n\n⚠️ DEMO - kredit sa TERAZ NEPripisuje.\nAž po napojení Stripe sa pripíše automaticky.\n\nChat ostáva BLOKOVANÝ - po bonuse už nepíše.');
   document.getElementById('payModal').classList.remove('open');
-  //!!! DÔLEŽITÉ - NEPripisujeme nič - ostáva 0 kr
 }
-
-const EMOJIS=['😊','😍','😘','❤️','🔥','😏','💋','🥰','😂','🤩','😈','👅','💦','🍑','🍒','😋','😉','😜'];
+const EMOJIS=['😊','😍','😘','❤️','🔥','😏','💋','🥰','😂','🤩','😈'];
 function renderEmoji(){const ep=document.getElementById('emojiPicker');ep.innerHTML='';EMOJIS.forEach(e=>{const s=document.createElement('div');s.className='emoji';s.innerText=e;s.onclick=()=>{document.getElementById('msgInput').value+=e;};ep.appendChild(s);});}
 function toggleEmoji(){document.getElementById('emojiPicker').classList.toggle('open')}
 document.getElementById('fotoInp').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{pendingFoto=r.result;document.getElementById('fotoPreview').innerHTML=`<img src="${pendingFoto}" style="width:80px;border-radius:8px">`};r.readAsDataURL(f);});
