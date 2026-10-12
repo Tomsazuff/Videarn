@@ -41,7 +41,7 @@
 <h1>Horúce baby čakajú</h1>
 <p>Spoznaj krásne ženy z tvojho okolia. Diskrétny, moderovaný chat bez záväzkov. Prvé 2 kredity zadarmo po registrácii.</p>
 <div style="margin-top:10px"><span style="background:#fff;color:#ff2a6d;padding:4px 10px;border-radius:20px;font-size:12px">ONLINE 127 BAB - ŽILINA - BRATISLAVA</span></div>
-<div style="margin:16px auto 0;background:#fff;color:#111;padding:16px;border-radius:12px;text-align:left;max-width:320px"><h3>Ako to funguje?</h3><p>1️⃣ Registrácia zadarmo</p><p>2️⃣ Vyber si babu</p><p>3️⃣ Píš za 0.5 kr / správa</p><button class="cta" onclick="document.getElementById('baby').scrollIntoView()">Zobraziť baby</button><button class="cta sec" onclick="openRegister()">Registrovať sa zadarmo</button></div>
+<div style="margin:16px auto 0;background:#fff;color:#111;padding:16px;border-radius:12px;text-align:left;max-width:320px"><h3>Ako to funguje?</h3><p>1⃣ Registrácia zadarmo</p><p>2⃣ Vyber si babu</p><p>3⃣ Píš za 0.5 kr / správa</p><button class="cta" onclick="document.getElementById('baby').scrollIntoView()">Zobraziť baby</button><button class="cta sec" onclick="openRegister()">Registrovať sa zadarmo</button></div>
 <div style="margin-top:10px;font-size:12px">5 OVERENÝCH BÁB • 0.5 kr ZA SPRÁVU • 24/7 MODEROVANÉ</div>
 </div>
 <div id="baby" style="padding:16px 16px 0;display:flex;justify-content:space-between"><h2>Vyber si babu</h2><span style="color:#22c55e;font-size:12px">4 ONLINE</span></div>
@@ -58,11 +58,11 @@
 <div id="chatModal"><div class="chat-head"><button onclick="closeChat()">←</button><div id="chatName" style="font-weight:700"></div><div style="margin-left:auto" id="chatCred">0 kr</div></div><div class="messages" id="msgs"></div><div class="chat-input"><button class="icon-btn" onclick="toggleEmoji()">😊</button><button class="icon-btn" onclick="document.getElementById('photoInput').click()">📷</button><input type="file" id="photoInput" accept="image/*" style="display:none" onchange="sendPhoto(this)"><div class="emoji-panel" id="emojiPanel"></div><input type="text" id="chatInp" placeholder="Napíš správu..." onkeydown="if(event.key==='Enter')sendMsg()"><button class="cta" onclick="sendMsg()">Odoslať</button></div></div>
 <script>
 const women=[
-{name:"Veronika",age:24,city:"Bratislava",online:true,img:"veronika.jpg"},
-{name:"Katka",age:27,city:"Košice",online:true,img:"katka.jpg"},
-{name:"Simona",age:22,city:"Nitra",online:false,img:"simona.jpg"},
-{name:"Lenka",age:26,city:"Žilina",online:true,img:"lenka.jpg"},
-{name:"Petra",age:25,city:"Trnava",online:true,img:"petra.jpg"},
+{name:"Veronika",age:24,city:"Bratislava",online:true,img:"./1.jpg"},
+{name:"Katka",age:27,city:"Košice",online:true,img:"./2.jpg"},
+{name:"Simona",age:22,city:"Nitra",online:false,img:"./3.jpg"},
+{name:"Lenka",age:26,city:"Žilina",online:true,img:"./4.jpg"},
+{name:"Petra",age:25,city:"Trnava",online:true,img:"./5.jpg"},
 ];
 let user=null,kredity=0,current=null;let selectedPackage=null,selectedCredits=0;
 const grid=document.getElementById('grid');
@@ -80,7 +80,7 @@ function sendMsg(){const inp=document.getElementById('chatInp');const t=inp.valu
 function addBubble(text,isMe,isImg){const m=document.getElementById('msgs');const b=document.createElement('div');b.className='bubble '+(isMe?'me':'them');if(isImg){b.innerHTML='<img src="'+text+'" style="max-width:200px;border-radius:12px;display:block">'}else{b.innerText=text}m.appendChild(b);m.scrollTop=m.scrollHeight}
 function selectPackage(credits,price){selectedCredits=credits;selectedPackage=price;document.querySelectorAll('.credit-row').forEach(r=>r.classList.remove('selected'));event.currentTarget.classList.add('selected');document.getElementById('selectedInfo').innerText='Vybraný balík: '+price+'€ = '+credits+' kreditov. Teraz vyplň kartu dole.';document.getElementById('cardPayBox').classList.add('active');document.getElementById('cardPayBox').scrollIntoView({behavior:'smooth'});}
 function payWithCard(){if(selectedCredits===0){alert('Najprv si vyber balík hore');return}const num=document.getElementById('cardNum').value;const exp=document.getElementById('cardExp').value;const cvc=document.getElementById('cardCvc').value;const name=document.getElementById('cardName').value;if(!num||!exp||!cvc||!name||num.length<13){alert('Vyplň všetky údaje karty');return}kredity+=selectedCredits;updateKred();closeModals();alert('Platba '+selectedPackage+'€ úspešná! Pripísaných '+selectedCredits+' kreditov.');selectedCredits=0;selectedPackage=null;}
-const emojis=["😀","😂","❤️","😍","🔥","😘","😏","😎","🤔","😢","😡","👍","👎","💋","🥰","😈","😇","🥵","😋","🤤","🙈","🙉","🙊","💕","💖","💘","💝","💞","💟","😻","😹","🥳","😜","🤩","🤑","🤗"];
+const emojis=["😀","😂","❤","😍","🔥","😘","😏","😎","🤔","😢","😡","👍","👎","💋","🥰","😈","😇","🥵","😋","🤤","🙈","🙉","🙊","💕","💖","💘","💝","💞","💟","😻","😹","🥳","😜","🤩","🤑","🤗"];
 const ep=document.getElementById('emojiPanel');emojis.forEach(e=>{const s=document.createElement('span');s.innerText=e;s.onclick=()=>{document.getElementById('chatInp').value+=e;ep.classList.remove('open');document.getElementById('chatInp').focus()};ep.appendChild(s);});
 function toggleEmoji(){ep.classList.toggle('open')}
 function sendPhoto(input){const file=input.files[0];if(!file)return;if(kredity<0.5){openCredits();return}const reader=new FileReader();reader.onload=e=>{addBubble(e.target.result,true,true);kredity-=0.5;updateKred();};reader.readAsDataURL(file);input.value='';}
