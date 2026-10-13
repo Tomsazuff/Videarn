@@ -2,87 +2,135 @@
 <html lang="sk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SpoznajMa MOD</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moderátorka - SpoznajMa.sk</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<style>
+body{background:#0e0e12;color:#fff;font-family:Inter,system-ui,sans-serif}
+.scrollbar::-webkit-scrollbar{width:6px}
+.scrollbar::-webkit-scrollbar-thumb{background:#ff2d78;border-radius:3px}
+</style>
 </head>
-<body class="bg-[#0e0e12] text-white">
-<div class="h-[60px] bg-black border-b border-white/10 flex items-center gap-3 px-4">
-<div class="bg-white/10 px-4 py-2 rounded-full text-sm font-bold">Chlapi ▼ <span class="bg-white/20 px-2 rounded-full ml-2">3</span></div>
-<div class="bg-white/10 px-4 py-2 rounded-full text-sm font-bold">Čakajúce správy <span class="bg-[#ff2a6d] px-2 rounded-full ml-2">2</span></div>
-<div class="flex gap-2 ml-auto" id="topWomen"></div>
+<body class="h-screen overflow-hidden flex flex-col">
+
+<header class="h-14 bg-black border-b border-white/10 flex items-center justify-between px-4 shrink-0">
+<div class="font-black text-xl"><span style="color:#ff2d78">Spoznaj</span>Ma.sk <span class="text-[10px] bg-white/10 px-2 py-0.5 rounded ml-2">MODERÁTORKA</span></div>
+<div class="flex gap-3 items-center">
+<div id="credits" class="text-sm">Kredity: <b id="cred">127</b></div>
+<button class="bg-[#ff2d78] px-4 py-1.5 rounded-full text-sm font-bold">Online</button>
 </div>
-<div class="flex min-h-[calc(100vh-60px)]">
-<div class="w-[380px] bg-[#15151a] border-r border-white/10 p-4">
-<div class="flex gap-3 mb-6">
-<div class="w-16 h-16 rounded-full bg-white/10 overflow-hidden"><img id="guyImg" src="https://i.pravatar.cc/150?img=10" class="w-full h-full object-cover"></div>
-<div><div class="font-bold">Jano, 27</div><div class="text-[12px] opacity-60">IP: 192.168.1.42 • 08:14 • Vek: 27</div></div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+
+<!-- STĹPEC 1 - ŽENY -->
+<div class="w-[280px] border-r border-white/10 flex flex-col shrink-0">
+<div class="p-3 border-b border-white/10">
+<input id="search" placeholder="Hľadať..." class="w-full bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm outline-none">
 </div>
-<div class="space-y-4">
-<div><div class="text-[10px] font-black opacity-40 tracking-widest mb-2">NAME</div><div class="bg-[#1e1e26] border border-white/10 rounded-xl p-3 text-sm">Jano</div></div>
-<div><div class="text-[10px] font-black opacity-40 tracking-widest mb-2">DESCRIPTION</div><div class="bg-[#1e1e26] border border-white/10 rounded-xl p-3 text-sm">Ahoj, som Jano, 27r, Žilina. Rád športujem.</div></div>
-<div><div class="text-[10px] font-black opacity-40 tracking-widest mb-2">OTHER INFORMATIONS</div><div class="bg-[#1e1e26] border border-white/10 rounded-xl p-3 text-sm">Hľadám úprimnú babu na pokec.</div></div>
-<div><div class="text-[10px] font-black opacity-40 tracking-widest mb-2">DENNÍK</div><div class="bg-[#1e1e26] border border-white/10 rounded-xl p-3 text-sm min-h-[120px] text-white/60">Poznámky o chlapovi - *Profile updated by the customer, please type additional informations in this field!</div></div>
-<button class="w-full bg-[#0e0e12] border border-white/10 rounded-xl py-3 font-black text-sm">Uložiť</button>
+<div id="women" class="flex-1 overflow-y-auto scrollbar p-2 space-y-2"></div>
 </div>
+
+<!-- STĹPEC 2 - CHAT -->
+<div class="flex-1 flex flex-col bg-[#15151c]">
+<div id="chatHeader" class="h-16 border-b border-white/10 flex items-center gap-3 px-4">
+<img id="chAvatar" src="./1.jpg" class="w-10 h-10 rounded-full object-cover">
+<div><div id="chName" class="font-bold">Veronika 24</div><div class="text-xs text-green-400">● Online • píše...</div></div>
 </div>
-<div class="flex-1 p-4 flex gap-4">
-<div class="w-[340px] bg-[#15151a] rounded-2xl border border-white/10 p-4 h-fit">
-<div class="flex items-center gap-3 mb-4"><img id="womanBig" src="./1.jpg" class="w-14 h-14 rounded-full object-cover"><div><div id="womanName" class="font-bold"></div><div id="womanCity" class="text-xs opacity-60"></div></div></div>
-<div class="text-[10px] font-black opacity-40 mb-2">DESCRIPTION</div><div id="womanDesc" class="bg-[#ff2a6d]/10 border border-[#ff2a6d]/20 rounded-xl p-3 text-sm mb-4"></div>
-<div class="text-[10px] font-black opacity-40 mb-2">OTHER INFORMATION</div><div id="womanOther" class="bg-[#1e1e26] border border-white/10 rounded-xl p-3 text-sm mb-4"></div>
-<div class="text-[10px] font-black opacity-40 mb-2">DENNÍK ŽENY</div><div class="bg-[#1e1e26] border border-white/10 rounded-xl p-3 text-sm min-h-[100px] text-white/60">Poznámky - tu môžeš písať...</div>
-<button class="w-full bg-[#ff2a6d] rounded-xl py-3 font-black text-sm mt-4">Odoslať správu</button>
-</div>
-<div class="flex-1 bg-[#15151a] rounded-2xl border border-white/10 flex flex-col">
-<div class="p-3 border-b border-white/10 font-bold text-sm" id="chatTitle">Chat: Jano ↔ Veronika</div>
-<div class="flex-1 p-4 space-y-2 overflow-auto" id="chatBox">
-<div class="bg-white/10 rounded-2xl px-4 py-2 max-w-[70%] text-sm">Ahoj Veronika, ako sa máš dnes? 🙂</div>
-<div class="bg-[#ff2a6d] rounded-2xl px-4 py-2 max-w-[70%] ml-auto text-sm">Ahoj Janko, mám sa fajn, ty ako?</div>
-</div>
-<div class="p-3 border-t border-white/10 flex gap-2"><input id="msgInput" placeholder="Napíš správu..." class="flex-1 bg-white/10 rounded-full px-4 py-2 text-sm outline-none"><button id="sendBtn" class="bg-[#ff2a6d] w-10 h-10 rounded-full">➤</button></div>
+<div id="messages" class="flex-1 overflow-y-auto scrollbar p-4 space-y-3"></div>
+<div class="p-3 border-t border-white/10 flex gap-2">
+<input id="msgInput" placeholder="Napíš správu..." class="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2.5 text-sm outline-none">
+<button onclick="send()" class="bg-[#ff2d78] w-10 h-10 rounded-full font-bold">➤</button>
 </div>
 </div>
+
+<!-- STĹPEC 3 - PROFIL + KOLOTOČ -->
+<div class="w-[340px] border-l border-white/10 flex flex-col shrink-0 bg-[#0e0e12]">
+<div class="p-4">
+<img id="bigPhoto" src="./1.jpg" class="w-full h-[260px] object-cover rounded-2xl">
+<h2 id="bigName" class="font-black text-xl mt-3">Veronika, 24</h2>
+<p id="bigCity" class="text-sm opacity-60">Bratislava • 1.2 km</p>
+<div class="flex gap-2 mt-3">
+<button class="flex-1 bg-[#ff2d78] py-2 rounded-full text-sm font-bold">Poslať foto</button>
+<button class="flex-1 bg-white/10 py-2 rounded-full text-sm">Blokovať</button>
 </div>
+</div>
+<div class="border-t border-white/10 p-3 flex-1 overflow-hidden flex flex-col">
+<div class="flex justify-between items-center mb-2"><span class="text-xs font-bold opacity-60">KOLOTOČ (FIFO)</span><span id="queueCount" class="text-xs bg-[#ff2d78] px-2 py-0.5 rounded-full">5</span></div>
+<div id="carousel" class="flex-1 overflow-y-auto scrollbar space-y-2"></div>
+</div>
+</div>
+
+</div>
+
 <script>
 const WOMEN=[
-{id:0,name:"Veronika",age:24,city:"Bratislava",photo:"./1.jpg",desc:"Ahoj, som Veronika, rada spoznávam nových ľudí...",other:"Hľadám úprimné rozhovory, rada chodím na kávu a prechádzky."},
-{id:1,name:"Katka",age:27,city:"Košice",photo:"./2.jpg",desc:"Katka, milujem knihy a hudbu, som komunikatívna.",other:"Voľný čas trávim v prírode, rada varím."},
-{id:2,name:"Simona",age:22,city:"Nitra",photo:"./3.jpg",desc:"Simona 22, študujem a popri tom rada chatujem.",other:"Mám rada humor a spontánne nápady."},
-{id:3,name:"Lenka",age:26,city:"Žilina",photo:"./4.jpg",desc:"Lenka, otvorená duša, rada počúvam.",other:"Cestovanie, fotenie, dobrá káva."},
-{id:4,name:"Petra",age:25,city:"Trnava",photo:"./5.jpg",desc:"Petra, pracujem v gastre, rada sa zabávam.",other:"Hľadám pokec bez pretvárky."}
+{name:"Veronika",age:24,city:"Bratislava",photo:"./1.jpg",dist:"1.2 km",online:true,msg:"Ahoj, čo robíš? 😘"},
+{name:"Katka",age:22,city:"Košice",photo:"./2.jpg",dist:"0.8 km",online:true,msg:"Si tu?"},
+{name:"Simona",age:26,city:"Žilina",photo:"./3.jpg",dist:"2.1 km",online:false,msg:"Máš chvíľu?"},
+{name:"Lenka",age:23,city:"Nitra",photo:"./4.jpg",dist:"3.4 km",online:true,msg:"Ahojky 🥰"},
+{name:"Petra",age:25,city:"Prešov",photo:"./5.jpg",dist:"1.7 km",online:true,msg:"Čauko"},
 ];
-let womanIdx=0;
-function render(){
-const w=WOMEN[womanIdx];
-document.getElementById('womanBig').src=w.photo;
-document.getElementById('womanName').textContent=w.name+', '+w.age;
-document.getElementById('womanCity').textContent=w.city+' • Online';
-document.getElementById('womanDesc').textContent=w.desc;
-document.getElementById('womanOther').textContent=w.other;
-document.getElementById('chatTitle').textContent='Chat: Jano ↔ '+w.name;
-const top=document.getElementById('topWomen');
-top.innerHTML='';
-WOMEN.forEach((ww,i)=>{
-const b=document.createElement('button');
-b.className=`w-10 h-10 rounded-full overflow-hidden border-2 ${i===womanIdx?'border-[#ff2a6d]':'border-transparent'}`;
-b.innerHTML=`<img src="${ww.photo}" class="w-full h-full object-cover">`;
-b.onclick=()=>{womanIdx=i;render();};
-top.appendChild(b);
+let active=0;
+let fifo=[...WOMEN];
+
+function renderWomen(){
+const box=document.getElementById('women'); box.innerHTML='';
+WOMEN.forEach((w,i)=>{
+box.innerHTML+=`
+<div onclick="select(${i})" class="flex gap-3 p-2 rounded-xl cursor-pointer hover:bg-white/5 ${active===i?'bg-[#ff2d78]/10 border border-[#ff2d78]/30':''}">
+<img src="${w.photo}" class="w-12 h-12 rounded-full object-cover">
+<div class="flex-1 min-w-0"><div class="font-bold text-sm flex gap-2">${w.name}, ${w.age} ${w.online?'<span class=w-2 h-2 bg-green-400 rounded-full inline-block></span>':''}</div><div class="text-xs opacity-60 truncate">${w.city} • ${w.dist}</div><div class="text-xs opacity-80 truncate">${w.msg}</div></div>
+</div>`;
 });
 }
-render();
-document.getElementById('sendBtn').onclick=()=>{
-const inp=document.getElementById('msgInput');
-if(!inp.value.trim())return;
-const box=document.getElementById('chatBox');
+
+function renderCarousel(){
+const box=document.getElementById('carousel'); box.innerHTML='';
+fifo.forEach((w,i)=>{
+box.innerHTML+=`
+<div class="flex gap-2 p-2 rounded-lg bg-white/5 text-xs">
+<img src="${w.photo}" class="w-8 h-8 rounded-full object-cover">
+<div class="flex-1"><b>${w.name}</b> • ${w.city}<br><span class="opacity-60">${w.msg}</span></div>
+</div>`;
+});
+document.getElementById('queueCount').innerText=fifo.length;
+}
+
+function select(i){
+active=i; const w=WOMEN[i];
+document.getElementById('chAvatar').src=w.photo;
+document.getElementById('chName').innerText=w.name+" "+w.age;
+document.getElementById('bigPhoto').src=w.photo;
+document.getElementById('bigName').innerText=w.name+", "+w.age;
+document.getElementById('bigCity').innerText=w.city+" • "+w.dist;
+renderWomen();
+addMsg(w.msg,false);
+}
+
+function addMsg(t,me){
+const m=document.getElementById('messages');
 const d=document.createElement('div');
-d.className='bg-[#ff2a6d] rounded-2xl px-4 py-2 max-w-[70%] ml-auto text-sm';
-d.textContent=inp.value;
-box.appendChild(d);
+d.className=me?'flex justify-end':'flex justify-start';
+d.innerHTML=`<div class="${me?'bg-[#ff2d78]':'bg-white/10'} px-4 py-2 rounded-2xl max-w-[80%] text-sm">${t}</div>`;
+m.appendChild(d); m.scrollTop=m.scrollHeight;
+}
+
+function send(){
+const inp=document.getElementById('msgInput'); if(!inp.value.trim()) return;
+addMsg(inp.value,true);
+// FIFO - posuň aktuálnu na koniec
+const moved=fifo.splice(active,1)[0];
+fifo.push(moved);
+renderCarousel();
+let c=parseInt(document.getElementById('cred').innerText); document.getElementById('cred').innerText=c-1;
 inp.value='';
-box.scrollTop=box.scrollHeight;
-};
+setTimeout(()=>addMsg("Hmm 😍 a čo ďalej?",false),900);
+}
+
+renderWomen(); renderCarousel();
+select(0);
+addMsg("Ahoj, si moderátorka? Potrebujem odpovedať chlapom 💬",false);
 </script>
 </body>
 </html>
