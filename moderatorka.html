@@ -1,569 +1,648 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { MessageCircle, BarChart3, LogOut, Users, UserCheck, UserX, Clock, ChevronLeft, ChevronRight, AlertTriangle, Send, Circle, HelpCircle, Smile, Star, UserCircle, Image as ImageIcon, X, Check, MapPin, Calendar, Ruler, Heart, Briefcase, Flame, Coins, Eye, Scissors, PersonStanding } from 'lucide-react';
 
-const FALLBACK_WOMAN_SVG = (name: string, color: string) => `data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='100%' height='100%' fill='${color}'/><text x='50%' y='50%' dy='.35em' text-anchor='middle' fill='white' font-family='sans-serif' font-size='48' font-weight='700'>${name[0]}</text></svg>`)}`;
+import photoLinda from './assets/linda.jpg';
+import photoBlondina from './assets/blondina.jpg';
+import photoKucerava from './assets/kucerava.jpg';
+import photoHnedovlaska1 from './assets/hnedovlaska1.jpg';
+import photoHnedovlaska2 from './assets/hnedovlaska2.jpg';
 
-const WOMEN = [
-  { id: 'veronika', name: 'Veronika', age: 24, city: 'Bratislava', photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400', fallback: FALLBACK_WOMAN_SVG('Veronika','#ff2d78'), status: 'online', mood: 'Hravá' },
-  { id: 'katka', name: 'Katka', age: 22, city: 'Košice', photo: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400', fallback: FALLBACK_WOMAN_SVG('Katka','#7c3aed'), status: 'online', mood: 'Zvedavá' },
-  { id: 'simona', name: 'Simona', age: 26, city: 'Žilina', photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400', fallback: FALLBACK_WOMAN_SVG('Simona','#ec4899'), status: 'busy', mood: 'Koketná' },
-  { id: 'lenka', name: 'Lenka', age: 23, city: 'Nitra', photo: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400', fallback: FALLBACK_WOMAN_SVG('Lenka','#06b6d4'), status: 'online', mood: 'Romantická' },
-  { id: 'petra', name: 'Petra', age: 25, city: 'Prešov', photo: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400', fallback: FALLBACK_WOMAN_SVG('Petra','#f59e0b'), status: 'online', mood: 'Drzá' },
-];
-
-const MALE_NAMES = ['Lukáš', 'Martin', 'Tomáš', 'Peter', 'Jakub', 'Michal', 'Ján', 'Marek', 'Filip', 'Andrej', 'Matúš', 'Dávid', 'Adam', 'Samuel', 'Dominik'];
-const CITIES = ['Bratislava', 'Košice', 'Žilina', 'Nitra', 'Prešov', 'Trnava', 'Banská Bystrica', 'Trenčín', 'Poprad', 'Martin'];
-const STARTER_MSGS = [
-  'Ahoj kočka, čo robíš? 😏',
-  'Si fakt pekná, pokecáme?',
-  'Ahoj, máš chvíľu?',
-  'Čau, odkiaľ si? Ja z BA',
-  'Ahoj, si tu často?',
-  'Hej, nechceš ísť na kávu niekedy?',
-  'Ahoj, čo hľadáš tu?',
-  'Čau kráska 😍',
-];
-
-type Man = {
-  id: string;
+type ManProfile = {
+  id: number;
   name: string;
+  displayName: string;
   age: number;
   city: string;
   credits: number;
-  status: 'nový' | 'aktívny' | 'platiaci';
-  registeredAt: Date;
-  isNewUntil: number;
-  avatar: string; // initials only
-  bio: string;
+  online: boolean;
+  avatar: string;
+  photo: string;
+  description: string;
+  otherInfo: string;
+  job: string;
+  sexPref: string;
+  note: string;
+  interests: string;
+  height: string;
+  marital: string;
 };
 
-type QueueItem = { manId: string; womanId: string; at: number };
-type Message = { id: string; from: 'man' | 'woman'; text: string; time: string };
+type WomanProfile = {
+  id: number;
+  name: string;
+  displayName: string;
+  age: number;
+  city: string;
+  photo: string;
+  label: string;
+  description: string;
+  otherInfo: string;
+  job: string;
+  sexPref: string;
+  booked: string;
+  others: string;
+  datum: string;
+  height: string;
+  hair: string;
+  figure: string;
+  online: boolean;
+  earnings: string;
+};
 
-function genMan(isNew = false): Man {
-  const name = MALE_NAMES[Math.floor(Math.random()*MALE_NAMES.length)];
-  return {
-    id: 'm_' + Math.random().toString(36).slice(2,8),
-    name,
-    age: Math.floor(Math.random()*25)+22,
-    city: CITIES[Math.floor(Math.random()*CITIES.length)],
-    credits: Math.floor(Math.random()*90)+10,
-    status: Math.random() > 0.6 ? 'platiaci' : Math.random()>0.3 ? 'aktívny' : 'nový',
-    registeredAt: new Date(),
-    isNewUntil: isNew ? Date.now()+45000 : 0,
-    avatar: name.slice(0,2).toUpperCase(),
-    bio: ['Hľadám pokec', 'Rád športujem', 'Pracujem v IT', 'Mám rád cestovanie'][Math.floor(Math.random()*4)],
-  };
-}
+type Message = { from: 'customer' | 'moderator'; text: string; time: string; };
+type WaitingItem = { man: ManProfile; woman: WomanProfile; lastMessage: string; timestamp: Date; };
 
-const initialMen: Man[] = Array.from({length: 11}).map(()=>genMan(false));
+const makeManAvatar = (name: string, id: number) => {
+  const colors = ['#e91e63','#9c27b0','#4caf50','#ff9800','#2196f3','#795548','#607d8b','#3f51b5'];
+  const bg = colors[id % colors.length];
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><rect width='100%' height='100%' rx='12' fill='${bg}'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-weight='700' font-size='26' fill='white'>${name[0]}</text></svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+};
 
-export default function App(){
-  const [men, setMen] = useState<Man[]>(initialMen);
-  const [women] = useState(WOMEN);
-  const [shouldLoadExternal, setShouldLoadExternal] = useState(false);
-  useEffect(()=>{
-    // Only load Unsplash when truly online and not in file:// validation
-    const isFile = typeof window !== 'undefined' && (window.location.protocol === 'file:' || window.location.href.startsWith('file://'));
-    const online = typeof navigator !== 'undefined' ? navigator.onLine : true;
-    // defer external load to avoid validator asset failures
-    if(!isFile && online){
-      // delay a bit so validator initial scan passes
-      const t = setTimeout(()=> setShouldLoadExternal(true), 1500);
-      return ()=> clearTimeout(t);
-    }
-  },[]);
-  const [queue, setQueue] = useState<QueueItem[]>(()=>{
-    return initialMen.slice(0,6).map(m=>({
-      manId: m.id,
-      womanId: WOMEN[Math.floor(Math.random()*WOMEN.length)].id,
-      at: Date.now() - Math.floor(Math.random()*600000)
-    }));
+// Use in-memory avatars to avoid external network (validator blocks randomuser.me)
+const MEN: ManProfile[] = [
+  { id: 1, name: 'Michal', displayName: 'Michal4860', age: 40, city: 'Turie', credits: 120, online: true, avatar: makeManAvatar('Michal',1), photo: makeManAvatar('Michal',1), description: 'Hľadám niekoho na úprimný rozhovor.', otherInfo: '*píšu si MEGA DLHO, je to psychopat a magor totálny chce ju za manželku, aj ju tak volá', job: 'Nezamestnaný', sexPref: 'odzadu, lízanie', note: '*píšu si MEGA DLHO, je to psychopat a magor totálny chce ju za manželku, aj ju tak volá', interests: 'Turistika', height: '182cm', marital: 'Rozvedený' },
+  { id: 2, name: 'Peter', displayName: 'Peter7742', age: 41, city: 'Bratislava', credits: 85, online: false, avatar: makeManAvatar('Peter',2), photo: makeManAvatar('Peter',2), description: 'Podnikateľ, málo času.', otherInfo: '*píše len večer, chce diskrétnosť', job: 'Podnikateľ', sexPref: 'klasika', note: '*píše len večer', interests: 'Biznis', height: '178cm', marital: 'Slobodný' },
+  { id: 3, name: 'Jozef', displayName: 'Jozef113', age: 29, city: 'Nitra', credits: 210, online: true, avatar: makeManAvatar('Jozef',3), photo: makeManAvatar('Jozef',3), description: 'Mladý, zvedavý.', otherInfo: '*prvýkrát tu, opatrne', job: 'Stavbár', sexPref: 'skúšať nové', note: '*nový', interests: 'Hudba', height: '185cm', marital: 'Slobodný' },
+  { id: 4, name: 'Marek', displayName: 'Marek998', age: 38, city: 'Žilina', credits: 45, online: false, avatar: makeManAvatar('Marek',4), photo: makeManAvatar('Marek',4), description: 'Unavený z práce.', otherInfo: '*chce vypnúť', job: 'Vodič', sexPref: 'masáž', note: '', interests: 'Šport', height: '180cm', marital: 'Ženatý' },
+  { id: 5, name: 'Tomáš', displayName: 'Tomas45', age: 45, city: 'Trnava', credits: 300, online: true, avatar: makeManAvatar('Tomáš',5), photo: makeManAvatar('Tomáš',5), description: 'Skúsený.', otherInfo: '*pravidelný, platí', job: 'Manažér', sexPref: 'všetko', note: '', interests: 'Víno', height: '176cm', marital: 'Rozvedený' },
+  { id: 6, name: 'Lukáš', displayName: 'Lukas32', age: 32, city: 'Prešov', credits: 150, online: false, avatar: makeManAvatar('Lukáš',6), photo: makeManAvatar('Lukáš',6), description: 'Pracujem v IT.', otherInfo: '*večer online', job: 'IT', sexPref: 'chat', note: '', interests: 'IT', height: '183cm', marital: 'Slobodný' },
+  { id: 7, name: 'Martin', displayName: 'Martin36', age: 36, city: 'Banská Bystrica', credits: 95, online: true, avatar: makeManAvatar('Martin',7), photo: makeManAvatar('Martin',7), description: 'Romantik.', otherInfo: '*citlivý', job: 'Robotník', sexPref: 'nežnosti', note: '', interests: 'Príroda', height: '179cm', marital: 'Slobodný' },
+  { id: 8, name: 'Filip', displayName: 'Filip28', age: 28, city: 'Trenčín', credits: 60, online: false, avatar: makeManAvatar('Filip',8), photo: makeManAvatar('Filip',8), description: 'Študent.', otherInfo: '*študent, málo kreditov', job: 'Študent', sexPref: 'fotky', note: '', interests: 'Party', height: '181cm', marital: 'Slobodný' },
+];
+
+const WOMEN: WomanProfile[] = [
+  { id: 1, name: 'Linda', displayName: 'Linda483', age: 35, city: 'Bratislava', photo: photoLinda, label: 'Linda 35 Bratislava', description: 'Ahoj, som Linda. Milujem flirt...', otherInfo: 'Výška: 168cm', job: 'Manikúra', sexPref: 'nežný sex', booked: '-', others: '-', datum: '2024', height: '168cm', hair: 'Blond', figure: 'Štíhla', online: true, earnings: '0,5 kreditu / správa' },
+  { id: 2, name: 'Blondína', displayName: 'Blondina26', age: 26, city: 'Nitra', photo: photoBlondina, label: 'Blondína 26 Nitra', description: 'Sexi blondínka...', otherInfo: 'Výška: 172cm', job: 'Čašníčka', sexPref: 'pozornosť', booked: '-', others: '-', datum: '', height: '172cm', hair: 'Blond', figure: 'Atletická', online: true, earnings: '0,5 kreditu / správa' },
+  { id: 3, name: 'Kučeravá', displayName: 'Kucerava27', age: 27, city: 'Košice', photo: photoKucerava, label: 'Kučeravá 27 Košice', description: 'Temperamentná kučeravka.', otherInfo: 'Výška: 165cm', job: 'Kaderníčka', sexPref: 'vášeň', booked: '-', others: '-', datum: '', height: '165cm', hair: 'Hnedá kučeravá', figure: 'Kyprá', online: true, earnings: '0,5 kreditu / správa' },
+  { id: 4, name: 'Hnedovláska', displayName: 'Hnedovlaska25', age: 25, city: 'Trnava', photo: photoHnedovlaska1, label: 'Hnedovláska 25 Trnava', description: 'Nevinný pohľad...', otherInfo: 'Výška: 170cm', job: 'Študentka', sexPref: 'romantika', booked: '-', others: '-', datum: '', height: '170cm', hair: 'Hnedá', figure: 'Štíhla', online: true, earnings: '0,5 kreditu / správa' },
+  { id: 5, name: 'Hnedovláska', displayName: 'Hnedovlaska23', age: 23, city: 'Žilina', photo: photoHnedovlaska2, label: 'Hnedovláska 23 Žilina', description: 'Mladá, hravá...', otherInfo: 'Výška: 167cm', job: 'Predavačka', sexPref: 'hravá', booked: '-', others: '-', datum: '', height: '167cm', hair: 'Hnedá', figure: 'Štíhla', online: true, earnings: '0,5 kreditu / správa' },
+];
+
+export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentModerator, setCurrentModerator] = useState<'Tomáš' | 'Nikola'>('Tomáš');
+  const [isOnline, setIsOnline] = useState(true);
+  const [showOnlineList, setShowOnlineList] = useState<'online' | 'offline' | null>(null);
+  const [currentManIdx, setCurrentManIdx] = useState(0);
+  const [currentWomanIdx, setCurrentWomanIdx] = useState(0);
+  const [waitingQueue, setWaitingQueue] = useState<WaitingItem[]>([]);
+  const [totalSent, setTotalSent] = useState(37);
+  const [totalReceived] = useState(52);
+  const [messages, setMessages] = useState<Message[]>([
+    { from: 'customer', text: 'Ahoj krasavica, ako sa mas? Si tu?', time: '14:32' },
+    { from: 'moderator', text: 'Ahoj zlatko, som tu len pre teba... čo robíš pekné? 😘', time: '14:33' },
+    { from: 'customer', text: 'Myslím na teba celý deň. Chýbaš mi.', time: '14:35' },
+  ]);
+  const [messageInput, setMessageInput] = useState('Ahoj, myslela som na teba... chces pokracovat tam kde sme skoncili? ');
+  const [toast, setToast] = useState<string | null>(null);
+  const [elapsed, setElapsed] = useState(20);
+  const [customerNotesMap, setCustomerNotesMap] = useState<Record<number, string>>({
+    1: 'Michal je platič, reaguje na fotky nôh. Písať po 20:00, má rád oslovenie "zlatko". psychopat - chce ju za manželku, volá ju tak.',
+    2: '', 3: '', 4: '', 5: '', 6: '', 7: '', 8: ''
   });
-  const [messages, setMessages] = useState<Record<string, Message[]>>(()=>{
-    const map: Record<string, Message[]> = {};
-    initialMen.slice(0,6).forEach(m=>{
-      const w = WOMEN[Math.floor(Math.random()*WOMEN.length)];
-      const key = `${m.id}_${w.id}`;
-      map[key]=[
-        { id:'1', from:'man', text: STARTER_MSGS[Math.floor(Math.random()*STARTER_MSGS.length)], time: new Date().toLocaleTimeString('sk-SK',{hour:'2-digit', minute:'2-digit'}) }
-      ];
-    });
-    return map;
+  const [moderatorNotesMap, setModeratorNotesMap] = useState<Record<number, string>>({
+    1: 'Linda persona - nežná, romantická, posiela pusinky. Funguje na starších. Manikúra cover.',
+    2: '', 3: '', 4: '', 5: ''
   });
-  const [active, setActive] = useState<QueueItem | null>(()=> queue[0] || null);
-  const [input, setInput] = useState('');
-  const [showMenModal, setShowMenModal] = useState(false);
   const [showStats, setShowStats] = useState(false);
-  const [showPanic, setShowPanic] = useState(false);
-  const [toast, setToast] = useState<string|null>(null);
-  const [showEmoji, setShowEmoji] = useState(false);
-  const [todayRegistered, setTodayRegistered] = useState(7);
-  const chatRef = useRef<HTMLDivElement>(null);
-
-  const activeMan = useMemo(()=> men.find(m=>m.id===active?.manId) || null, [men, active]);
-  const activeWoman = useMemo(()=> women.find(w=>w.id===active?.womanId) || null, [women, active]);
-  const convoKey = active ? `${active.manId}_${active.womanId}` : '';
-  const convo = convoKey ? (messages[convoKey] || []) : [];
-
-  useEffect(()=>{
-    if(chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
-  }, [convo]);
-
-  // dynamic registrations every 17s
-  useEffect(()=>{
-    const id = setInterval(()=>{
-      const newMan = genMan(true);
-      const randomWoman = women[Math.floor(Math.random()*women.length)];
-      const msg: Message = { id: Date.now().toString(), from:'man', text: STARTER_MSGS[Math.floor(Math.random()*STARTER_MSGS.length)], time: new Date().toLocaleTimeString('sk-SK',{hour:'2-digit', minute:'2-digit'}) };
-      const key = `${newMan.id}_${randomWoman.id}`;
-      setMen(prev=>[newMan, ...prev]);
-      setMessages(prev=>({ ...prev, [key]: [msg] }));
-      setQueue(prev=> [...prev, { manId: newMan.id, womanId: randomWoman.id, at: Date.now() }]);
-      setTodayRegistered(v=>v+1);
-      setToast(`NOVÝ: ${newMan.name} ${newMan.age}r z ${newMan.city} → píše ${randomWoman.name}`);
-      setTimeout(()=>setToast(null), 3000);
-    }, 17000);
-    return ()=>clearInterval(id);
-  }, [women]);
-
-  // clear NEW badge after 45s
-  useEffect(()=>{
-    const i = setInterval(()=>{
-      setMen(prev=>prev.map(m=> (m.isNewUntil && m.isNewUntil < Date.now()) ? {...m, isNewUntil:0} : m));
-    }, 1000);
-    return ()=>clearInterval(i);
-  }, []);
-
-  const handleSend = ()=>{
-    if(!input.trim() || !active || !activeMan) return;
-    const key = `${active.manId}_${active.womanId}`;
-    const newMsg: Message = { id: Date.now().toString(), from:'woman', text: input, time: new Date().toLocaleTimeString('sk-SK',{hour:'2-digit', minute:'2-digit'}) };
-    setMessages(prev=>({ ...prev, [key]: [...(prev[key]||[]), newMsg] }));
-    // deduct credit
-    setMen(prev=>prev.map(m=> m.id===active.manId ? {...m, credits: Math.max(0, m.credits-2)} : m));
-    setInput('');
-    setShowEmoji(false);
-    
-    // kolotoč after 800ms
-    setTimeout(()=>{
-      setQueue(prev=>{
-        const remaining = prev.filter(q=> !(q.manId===active.manId && q.womanId===active.womanId));
-        if(remaining.length>0){
-          const next = remaining[0];
-          const nextMan = men.find(mm=>mm.id===next.manId) || activeMan;
-          setActive(next);
-          setToast(`Kolotoč: ${nextMan?.name} ${nextMan?.age}r → ${women.find(w=>w.id===next.womanId)?.name}`);
-          setTimeout(()=>setToast(null), 2500);
-          return remaining;
-        } else {
-          setActive(null);
-          return [];
-        }
-      });
-    }, 800);
+  const [showFronta, setShowFronta] = useState(false);
+  const [loginForm, setLoginForm] = useState<{ user: 'Tomáš' | 'Nikola', pass: string }>({ user: 'Tomáš', pass: '' });
+  const chatEndRef = useRef<HTMLDivElement>(null);
+  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
+  useEffect(() => { const t = setInterval(()=> setElapsed(e=>e+1), 1000); return ()=>clearInterval(t); }, []);
+  const currentMan = MEN[currentManIdx];
+  const currentWoman = WOMEN[currentWomanIdx];
+  const formatElapsed = (s:number) => {
+    const hh = String(Math.floor(s/3600)).padStart(2,'0');
+    const mm = String(Math.floor((s%3600)/60)).padStart(2,'0');
+    const ss = String(s%60).padStart(2,'0');
+    return `${hh}:${mm}:${ss}`;
   };
-
-  const openConversation = (manId:string, womanId:string)=>{
-    setActive({ manId, womanId, at: Date.now() });
-    setShowMenModal(false);
-  };
-
-  const handleWomanSwitch = (womanId: string)=>{
-    if(activeMan){
-      setActive({manId: activeMan.id, womanId, at: Date.now()});
-    } else {
-      const fallbackMan = men[0];
-      if(fallbackMan){
-        setActive({manId: fallbackMan.id, womanId, at: Date.now()});
-        setToast(`Otvorené: ${fallbackMan.name} → ${women.find(w=>w.id===womanId)?.name}`);
-        setTimeout(()=>setToast(null), 2000);
-      } else {
-        setToast('Žiadny chlap vo fronte');
-        setTimeout(()=>setToast(null), 2000);
+  const handleSend = () => {
+    if (!messageInput.trim()) return;
+    const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const newMsg: Message = { from: 'moderator', text: messageInput.trim(), time: now };
+    setMessages(prev => [...prev, newMsg]);
+    setTotalSent(c => c + 1);
+    const savedText = messageInput;
+    setMessageInput('');
+    setToast(`Správa odoslaná ako ${currentWoman.name}`);
+    setTimeout(() => {
+      const item: WaitingItem = { man: currentMan, woman: currentWoman, lastMessage: savedText, timestamp: new Date() };
+      setWaitingQueue(q => [item, ...q]);
+      if (isOnline) {
+        setCurrentManIdx(i => (i + 1) % MEN.length);
+        setCurrentWomanIdx(i => (i + 1) % WOMEN.length);
+        setMessages([
+          { from: 'customer', text: MEN[(currentManIdx + 1) % MEN.length].name === 'Peter' ? 'Ahoj, si tu? Včera si mi neodpísala.' : 'Ahojky, máš chvíľku?', time: 'teraz' }
+        ]);
+        setElapsed(0);
       }
-    }
+      setToast(null);
+    }, 1000);
   };
+  const nextMan = () => setCurrentManIdx(i => (i + 1) % MEN.length);
+  const prevMan = () => setCurrentManIdx(i => (i - 1 + MEN.length) % MEN.length);
+  const nextWoman = () => setCurrentWomanIdx(i => (i + 1) % WOMEN.length);
+  const prevWoman = () => setCurrentWomanIdx(i => (i - 1 + WOMEN.length) % WOMEN.length);
+  const handleLogin = () => {
+    if (loginForm.pass.length < 1) { setToast('Zadaj heslo (akékoľvek)'); setTimeout(()=>setToast(null),2000); return; }
+    setCurrentModerator(loginForm.user);
+    setIsLoggedIn(true);
+    setShowStats(false);
+  };
+  const handleChatClick = () => {
+    if (showStats) setShowStats(false);
+    else { setToast('Chat je aktívny – kolotoč mužov beží'); setTimeout(()=>setToast(null),1500); }
+  };
+  const handleStatsClick = () => {
+    if (!showStats) { setShowStats(true); setToast(`Štatistiky načítané pre ${currentModerator}`); setTimeout(()=>setToast(null),1500); }
+    else { setToast('Štatistiky už zobrazené'); setTimeout(()=>setToast(null),1200); }
+  };
+  const openOnlineModal = () => { setShowOnlineList(isOnline ? 'online' : 'offline'); };
 
-  return (
-    <div className="min-h-screen bg-[#0e0e12] text-zinc-100 flex flex-col font-[Inter] selection:bg-pink-500/30">
-      <style>{`
-        .syne { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; font-weight:700; letter-spacing:-0.02em; }
-        .instrument { font-family: Georgia, 'Times New Roman', serif; font-style: italic; }
-        .geist { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
-        ::-webkit-scrollbar{ width:5px; height:5px } ::-webkit-scrollbar-thumb{ background:#2a2a35; border-radius:10px }
-      `}</style>
-
-      {/* HEADER */}
-      <header className="h-[72px] border-b border-white/[0.08] bg-[#14141b] flex items-center px-4 md:px-6 justify-between sticky top-0 z-40 backdrop-blur-xl">
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-white text-black grid place-items-center font-bold syne text-[13px]">M</div>
-            <span className="syne font-bold tracking-tight text-[14px]">MODERÁTOR</span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-zinc-400 ml-1">v4.2</span>
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-[#f5f5f5] flex items-center justify-center p-4" style={{ paddingTop: 'var(--safe-area-inset-top)' }}>
+        <div className="bg-white rounded-xl shadow-2xl w-full max-w-[420px] overflow-hidden">
+          <div className="bg-[#e91e63] p-6 text-white">
+            <h1 className="text-2xl font-bold tracking-tight">ChatTool</h1>
+            <p className="text-white/80 text-sm mt-1 mono">agents.moderationinterface.com/chat/index</p>
           </div>
-
-          <div className="h-6 w-px bg-white/10 hidden md:block" />
-
-          <button onClick={()=>setShowMenModal(true)} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white text-black text-[13px] font-medium geist hover:bg-zinc-200 transition">
-            Chlapi <span className="text-[10px]">▼</span> <span className="ml-1 bg-black text-white px-1.5 rounded-full text-[11px]">{men.length}</span>
-          </button>
-
-          <div className="hidden md:flex items-center gap-2 text-[13px] geist">
-            <span className="text-zinc-500">Čakajúce správy</span>
-            <span className="bg-[#ff2d78] text-white px-2 py-0.5 rounded-full text-[12px] font-bold">{queue.length}</span>
-          </div>
-
-        <div className="hidden lg:flex items-center gap-1 ml-4">
-            {women.map(w=>(
-              <button key={w.id} aria-label={`Prepnúť na ${w.name}`} onClick={()=> handleWomanSwitch(w.id)} className={`relative w-9 h-9 rounded-full overflow-hidden border-2 transition ${activeWoman?.id===w.id ? 'border-[#ff2d78] scale-110' : 'border-white/10 hover:border-white/30'}`}>
-                <img src={shouldLoadExternal ? w.photo : w.fallback} alt={w.name} onError={(e)=>{ (e.target as HTMLImageElement).src = w.fallback; }} className="w-full h-full object-cover" />
-                <span className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#14141b] ${w.status==='online'?'bg-emerald-400':'bg-amber-400'}`} />
-              </button>
-            ))}
+          <div className="p-8">
+            <h2 className="font-semibold text-lg mb-6">Prihlásenie moderátora</h2>
+            <div className="flex gap-2 mb-6">
+              {(['Tomáš','Nikola'] as const).map(m => (
+                <button key={m} onClick={()=>{ setLoginForm(s=>({...s,user:m})); setToast(`Vybraný moderátor: ${m}`); setTimeout(()=>setToast(null),1200); }} className={`flex-1 py-3 rounded-lg border-2 font-medium transition-all ${loginForm.user===m ? 'border-[#e91e63] bg-[#fce4ec] text-[#e91e63] shadow-inner' : 'border-gray-200 hover:border-gray-300'}`} aria-pressed={loginForm.user===m}>
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#e91e63] to-[#9c27b0] flex items-center justify-center text-white font-bold">{m[0]}</div>
+                    <span>{m}</span>
+                    {m==='Tomáš' && <span className="text-[10px] text-gray-500">Majiteľ</span>}
+                    {loginForm.user===m && <span className="text-[10px] bg-[#e91e63] text-white px-2 py-0.5 rounded-full">✓ vybraný</span>}
+                  </div>
+                </button>
+              ))}
+            </div>
+            <label className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Heslo</label>
+            <input value={loginForm.pass} onChange={e=>setLoginForm(s=>({...s,pass:e.target.value}))} type="password" placeholder="ľubovoľné heslo" className="w-full mt-2 mb-6 px-4 py-3 rounded-lg border border-gray-200 bg-[#fafafa] focus:outline-none focus:border-[#e91e63] focus:bg-white" />
+            <button onClick={handleLogin} className="w-full bg-[#e91e63] hover:bg-[#c2185b] text-white py-3 rounded-lg font-semibold transition-colors">PRIHLÁSIŤ SA</button>
+            <p className="text-[11px] text-gray-400 mt-4 text-center mono">Demo: stačí akékoľvek heslo. Dáta zostávajú v pamäti. Verzia 5 - status dokopy</p>
           </div>
         </div>
+        {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#212121] text-white px-5 py-2.5 rounded-full text-sm shadow-lg">{toast}</div>}
+      </div>
+    );
+  }
 
-        <div className="flex items-center gap-3">
-          <div className="lg:hidden flex -space-x-2">
-            {women.slice(0,3).map(w=>(
-              <img key={w.id} src={shouldLoadExternal ? w.photo : w.fallback} alt={w.name} onError={(e)=>{ (e.target as HTMLImageElement).src = w.fallback; }} className="w-7 h-7 rounded-full border-2 border-[#14141b] object-cover" />
-            ))}
+  const StatusRow = ({ icon: Icon, label, value, accent }: { icon: any, label: string, value: string, accent?: boolean }) => (
+    <div className={`flex items-center justify-between px-3 py-[7px] ${accent ? 'bg-[#fffde7]' : ''}`}>
+      <span className="flex items-center gap-2 text-[11px] text-[#616161]">
+        <span className="w-5 h-5 rounded-full bg-[#f5f5f5] border flex items-center justify-center"><Icon className="w-3 h-3 text-[#757575]" /></span>
+        <span className="uppercase tracking-wider text-[10px] font-bold">{label}</span>
+      </span>
+      <span className={`text-[12px] ${accent ? 'font-extrabold text-[#212121]' : 'font-medium text-[#212121]'} truncate max-w-[150px] text-right`}>{value}</span>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-[#f0f0f0] flex flex-col text-[13px] text-[#212121]" style={{ paddingTop: 'var(--safe-area-inset-top)' }}>
+      <header className="bg-[#e91e63] text-white sticky top-0 z-40 shadow-md" style={{ top: 'var(--safe-area-inset-top)' }}>
+        <div className="flex items-center justify-between px-3 md:px-5 h-[48px] gap-2">
+          <div className="flex items-center gap-4">
+            <span className="font-bold text-[18px] tracking-tight">ChatTool</span>
+            <span className="hidden md:inline-flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-[11px] mono">
+              <Circle className="w-2 h-2 fill-[#4caf50] text-[#4caf50]" />
+              {currentModerator} • {isOnline ? 'Prihlásený' : 'Odhlásený'}
+            </span>
           </div>
-          <button aria-label="Stats" onClick={()=>setShowStats(true)} className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-[12px] geist border border-white/10">Stats</button>
-          <button aria-label="Panic Room" onClick={()=>setShowPanic(true)} className="px-3 py-1.5 rounded-full bg-[#ff2d78]/15 text-[#ff2d78] border border-[#ff2d78]/30 text-[12px] geist font-medium">Panic Room</button>
-          <div className="w-8 h-8 rounded-full bg-zinc-700 grid place-items-center text-[11px] font-bold">tomas</div>
+          <div className="flex items-center gap-1 md:gap-2">
+            <button onClick={openOnlineModal} className={`hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition border ${isOnline ? 'bg-[#4caf50] text-white border-[#4caf50]' : 'bg-[#9e9e9e] text-white border-[#9e9e9e]'}`}>
+              {isOnline ? <UserCheck className="w-3.5 h-3.5" /> : <UserX className="w-3.5 h-3.5" />}
+              {isOnline ? 'Prihlásený' : 'Odhlásený'}
+            </button>
+            <button onClick={openOnlineModal} className={`md:hidden inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-bold ${isOnline ? 'bg-[#4caf50] text-white' : 'bg-white/20 text-white'}`}>
+              {isOnline ? 'Prihlásený' : 'Odhlásený'}
+            </button>
+            <button onClick={()=>setShowFronta(true)} className="relative inline-flex items-center gap-1.5 bg-white/15 hover:bg-white/25 px-2.5 md:px-3.5 py-1.5 rounded-full text-xs font-semibold transition">
+              <Clock className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">Čakajúce</span> ({waitingQueue.length})
+              {waitingQueue.length>0 && <span className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-300 rounded-full animate-pulse" />}
+            </button>
+            <div className="w-px h-5 bg-white/30 mx-1 hidden md:block" />
+            <button onClick={handleChatClick} className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-bold tracking-wider ${!showStats ? 'bg-white text-[#e91e63]' : 'bg-white/10 hover:bg-white/20 text-white'}`}>
+              <MessageCircle className="w-3.5 h-3.5" /> CHAT
+            </button>
+            <button onClick={handleStatsClick} className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-bold tracking-wider ${showStats ? 'bg-white text-[#e91e63]' : 'bg-white/10 hover:bg-white/20 text-white'}`}>
+              <BarChart3 className="w-3.5 h-3.5" /> STATS
+            </button>
+            <select value={currentModerator} onChange={e=>setCurrentModerator(e.target.value as any)} className="hidden md:block bg-white/15 text-white text-xs font-bold px-2 py-1.5 rounded border border-white/20 focus:outline-none">
+              <option className="text-black" value="Tomáš">Tomáš (Majiteľ)</option>
+              <option className="text-black" value="Nikola">Nikola</option>
+            </select>
+            <button onClick={()=>setIsLoggedIn(false)} className="inline-flex items-center gap-1 bg-black/20 hover:bg-black/30 px-2.5 py-1.5 rounded text-xs font-bold tracking-wider">
+              <LogOut className="w-3.5 h-3.5" /> LOGOUT <span className="hidden md:inline">(ZL_{currentModerator==='Tomáš'?'137064':'137065'})</span>
+            </button>
+          </div>
+        </div>
+        <div className="bg-[#f5f5f5] text-[#616161] text-[11px] px-3 md:px-5 py-1 flex items-center gap-2 border-b border-black/10">
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded-full bg-[#4caf50]" />
+            <span className="mono">agents.moderationinterface.com/chat/index</span>
+          </div>
+          <span className="ml-auto hidden md:inline-flex items-center gap-2">
+            <span className="flex items-center gap-1"><span className="w-2 h-2 bg-[#4caf50] rounded-full" /> Muži: {MEN.length}</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 bg-[#e91e63] rounded-full" /> Ženy: {WOMEN.length}</span>
+            <span className="flex items-center gap-1"><Users className="w-3 h-3" /> Fronta: {waitingQueue.length}</span>
+          </span>
         </div>
       </header>
 
-      {/* MAIN 3 COLS */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-[320px_1fr_340px] min-h-0">
-        {/* LEFT - CHLAP PROFIL */}
-        <div className="border-r border-white/[0.06] bg-[#13131a] p-4 flex flex-col gap-4 overflow-auto">
-          <div className="flex items-center justify-between">
-            <h2 className="syne text-[11px] tracking-[0.2em] text-zinc-500 font-bold">CHLAP PROFIL</h2>
-            <span className="text-[11px] text-zinc-500">{queue.length} čaká</span>
+      <main className="flex-1 flex flex-col lg:flex-row gap-3 p-2 md:p-3 max-w-[1920px] w-full mx-auto">
+        {/* LEFT CUSTOMER – UNIFIED STATUS */}
+        <section className="w-full lg:w-[300px] xl:w-[340px] flex-shrink-0 flex flex-col gap-3">
+          <div className="bg-white rounded-lg shadow-sm border border-[#e0e0e0] overflow-hidden flex flex-col">
+            <div className="bg-gradient-to-r from-[#4caf50] to-[#388e3c] text-white px-3 py-2 flex items-center justify-between">
+              <div className="flex items-center gap-2 font-bold text-[13px] tracking-wider">Customer</div>
+              <div className="flex items-center gap-1">
+                <button onClick={prevMan} className="w-6 h-6 rounded bg-black/15 hover:bg-black/25 flex items-center justify-center"><ChevronLeft className="w-4 h-4" /></button>
+                <span className="text-[11px] mono bg-black/15 px-1.5 py-0.5 rounded">{currentManIdx+1}/{MEN.length}</span>
+                <button onClick={nextMan} className="w-6 h-6 rounded bg-black/15 hover:bg-black/25 flex items-center justify-center"><ChevronRight className="w-4 h-4" /></button>
+              </div>
+            </div>
+
+            {/* Photo center */}
+            <div className="p-3 pb-0 flex flex-col items-center">
+              <div className="relative">
+                <img src={currentMan.photo} alt={currentMan.displayName} className="w-[92px] h-[92px] rounded-full object-cover border-2 border-white shadow-md" onError={(e)=>{ (e.target as HTMLImageElement).src = currentMan.avatar; }} />
+                <div className={`absolute bottom-0.5 right-0.5 w-4 h-4 rounded-full border-2 border-white ${currentMan.online ? 'bg-[#4caf50]' : 'bg-gray-400'}`} />
+              </div>
+              <div className="mt-2 text-center">
+                <div className="font-extrabold text-[14px] tracking-tight">{currentMan.displayName}</div>
+                <div className="text-[11px] text-gray-500 mono">{currentMan.name} • {currentMan.age}r • {currentMan.city}</div>
+              </div>
+            </div>
+
+            {/* UNIFIED STATUS BOX */}
+            <div className="p-3">
+              <div className="bg-[#fafafa] border border-[#e0e0e0] rounded-xl overflow-hidden shadow-sm">
+                {/* top status row */}
+                <div className="px-3 py-2.5 bg-white border-b border-[#eeeeee] flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2.5 h-2.5 rounded-full ${currentMan.online ? 'bg-[#4caf50] animate-pulse shadow-[0_0_0_3px_rgba(76,175,80,0.2)]' : 'bg-gray-400'}`}></span>
+                    <span className={`text-[12px] font-bold ${currentMan.online ? 'text-[#2e7d32]' : 'text-[#616161]'}`}>{currentMan.online ? 'Online' : 'Offline'}</span>
+                    <span className="text-[11px] text-gray-400">•</span>
+                    <span className="text-[11px] font-medium text-[#212121]">{currentMan.city}</span>
+                  </div>
+                  <span className="text-[11px] font-extrabold bg-[#fff8e1] text-[#ef6c00] border border-[#ffe082] px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                    <Coins className="w-3.5 h-3.5" /> {currentMan.credits} kreditov
+                  </span>
+                </div>
+
+                <div className="divide-y divide-[#f0f0f0]">
+                  <StatusRow icon={MapPin} label="Mesto" value={currentMan.city} />
+                  <StatusRow icon={Calendar} label="Vek" value={`${currentMan.age} rokov`} />
+                  <StatusRow icon={Ruler} label="Výška" value={currentMan.height} />
+                  <StatusRow icon={Heart} label="Stav" value={currentMan.marital} />
+                  <StatusRow icon={Briefcase} label="Práca" value={currentMan.job || 'Neuvedené'} />
+                  <StatusRow icon={Flame} label="Sex pref" value={currentMan.sexPref} accent />
+                </div>
+
+                <div className="px-3 py-2 bg-[#f9fbe7] border-t border-[#e0e0e0] text-[11px] leading-[1.35]">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#827717] mb-0.5">Info</div>
+                  <div className="italic text-[#616161]">{currentMan.note || currentMan.otherInfo || currentMan.description} • {currentMan.interests}</div>
+                  <div className="mt-1.5 text-[10px] text-[#4caf50]">* Profile updated by the customer, please type additional informations in this field!</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Denník yellow box */}
+            <div className="px-3 pb-3 pt-0">
+              <div className="rounded-xl border border-[#ffe082] bg-[#fffde7] p-2.5 shadow-sm">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-[#f57f17] flex items-center gap-1"><span>📔</span> Denník – Zákazník ({currentMan.name})</label>
+                <textarea
+                  value={customerNotesMap[currentMan.id] || ''}
+                  onChange={e=>setCustomerNotesMap(m=>({...m, [currentMan.id]: e.target.value}))}
+                  placeholder="Poznámky k zákazníkovi..."
+                  className="w-full mt-1.5 min-h-[92px] p-2.5 text-[12px] bg-white border border-[#ffe082] rounded-lg focus:outline-none focus:border-[#e91e63] resize-none shadow-inner"
+                />
+                <div className="flex justify-between items-center mt-1.5">
+                  <span className="text-[10px] text-gray-400 mono">In-memory • {currentMan.displayName}</span>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold ${currentMan.online ? 'bg-[#e8f5e9] text-[#2e7d32] border-[#c8e6c9]' : 'bg-[#eeeeee] text-[#616161]'}`}>{currentMan.online ? 'Online' : 'Offline'}</span>
+                </div>
+              </div>
+            </div>
           </div>
+        </section>
 
-          {activeMan ? (
-            <div className="rounded-[20px] bg-[#1a1a23] border border-white/[0.06] p-4">
-              <div className="flex gap-3">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-800 grid place-items-center font-bold text-[16px] text-white border border-white/10">{activeMan.avatar}</div>
-                <div className="flex-1">
+        {/* CENTER - Send message panel */}
+        <section className="flex-1 min-w-0 flex flex-col">
+          {!showStats ? (
+            <div className="bg-white rounded-lg shadow-sm border border-[#e0e0e0] flex flex-col flex-1 min-h-[640px] lg:min-h-0">
+              <div className="bg-gradient-to-r from-[#9c27b0] to-[#7b1fa2] text-white px-4 py-2.5 flex items-center justify-between">
+                <div className="font-medium text-[13px] tracking-wide flex items-center gap-2">
+                  Send a message (Elapsed time: {formatElapsed(elapsed)})
+                </div>
+                <div className="flex items-center gap-2">
+                  <button className="w-6 h-6 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center"><HelpCircle className="w-4 h-4" /></button>
+                </div>
+              </div>
+              <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-[#fcfcfc]" style={{ maxHeight: '220px', minHeight: '120px' }}>
+                {messages.map((m,i)=>(
+                  <div key={i} className={`flex ${m.from==='moderator' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[78%] rounded-2xl px-3.5 py-2 text-[13px] leading-[1.35] shadow-sm ${m.from==='moderator' ? 'bg-gradient-to-br from-[#9c27b0] to-[#7b1fa2] text-white rounded-br-[4px]' : 'bg-white border border-gray-200 text-[#212121] rounded-bl-[4px]'}`}>
+                      <div>{m.text}</div>
+                      <div className={`text-[10px] mt-1 mono ${m.from==='moderator' ? 'text-white/70' : 'text-gray-400'} text-right`}>{m.time}</div>
+                    </div>
+                  </div>
+                ))}
+                <div ref={chatEndRef} />
+              </div>
+              <div className="px-4 py-3 bg-white border-t border-[#e0e0e0]">
+                <div className="flex justify-between items-start gap-4">
+                  <div className="space-y-0.5">
+                    <div className="text-[11px] text-gray-500 uppercase tracking-wider">DEFAULT</div>
+                    <div className="text-[12px] font-bold text-[#212121]">DEFAULT Keyword for service iDates2 SK</div>
+                  </div>
+                  <div className="flex flex-col gap-1 items-end shrink-0">
+                    <div className="inline-flex items-center gap-1.5 bg-[#7b1fa2] text-white text-[11px] px-2.5 py-1 rounded-full font-medium">
+                      SESSION START: 2. 10. 2024
+                    </div>
+                    <div className="inline-flex items-center gap-1.5 bg-[#eeeeee] text-[#616161] text-[11px] px-2.5 py-1 rounded-full font-mono border">
+                      SESSION: #1167708749
+                    </div>
+                  </div>
+                </div>
+                <div className="relative mt-3">
+                  <textarea
+                    value={messageInput}
+                    onChange={e=>setMessageInput(e.target.value)}
+                    onKeyDown={e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); handleSend(); } }}
+                    placeholder={`Píšeš ako ${currentWoman.name}... (Enter odošle)`}
+                    className="w-full min-h-[110px] p-3 pr-10 text-[13px] bg-[#fafafa] border border-[#e0e0e0] rounded-lg focus:outline-none focus:border-[#9c27b0] focus:bg-white resize-none shadow-inner"
+                  />
+                  <button className="absolute bottom-3 right-3 w-7 h-7 rounded-full bg-[#f5f5f5] border hover:bg-[#eeeeee] flex items-center justify-center">
+                    <Smile className="w-4 h-4 text-gray-500" />
+                  </button>
+                </div>
+                <div className="mt-1.5 text-[11px] text-gray-500">Please enter at least 70 chars. <span className={`ml-1 ${messageInput.length>=70 ? 'text-[#4caf50]' : 'text-[#e91e63]'}`}>({messageInput.length}/70)</span></div>
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <button onClick={()=>{ setMessageInput(''); setToast('PANIC ROOM - konverzácia vymazaná'); setMessages([]); setTimeout(()=>setToast(null),2000); }} className="inline-flex items-center gap-1.5 bg-gradient-to-r from-[#ff7043] to-[#e64a19] hover:from-[#ff5722] hover:to-[#d84315] text-white px-4 py-2 rounded text-[11px] font-bold tracking-wider shadow-sm">
+                    <AlertTriangle className="w-3.5 h-3.5" /> PANIC ROOM
+                  </button>
+                  <button onClick={()=>setToast('MEDIA CENTER otvorené')} className="inline-flex items-center gap-1.5 bg-gradient-to-r from-[#6a1b9a] to-[#4a148c] hover:from-[#5e35b1] hover:to-[#4a148c] text-white px-4 py-2 rounded text-[11px] font-bold tracking-wider shadow-sm">
+                    <ImageIcon className="w-3.5 h-3.5" /> MEDIA CENTER
+                  </button>
+                  <button onClick={handleSend} className="ml-auto inline-flex items-center gap-2 bg-gradient-to-r from-[#ab47bc] to-[#8e24aa] hover:from-[#9c27b0] hover:to-[#7b1fa2] text-white px-5 py-2.5 rounded font-bold text-[11px] tracking-wider shadow-md">
+                    <Send className="w-4 h-4" /> SEND MESSAGE
+                  </button>
+                </div>
+                <div className="mt-5 flex items-center gap-3">
+                  <div className="text-[12px] text-gray-700 font-medium">Customer rating:</div>
+                  <div className="flex items-center gap-0.5">
+                    {[1,2,3,4,5].map(i=>(
+                      <Star key={i} className="w-4 h-4 text-[#bdbdbd] fill-[#e0e0e0]" />
+                    ))}
+                  </div>
+                  <div className="ml-1 inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#eeeeee] border text-[11px] font-bold text-[#616161]">7</div>
+                </div>
+                <div className="mt-4 flex items-center justify-between border-t border-dashed pt-3">
+                  <div className="text-[11px] mono text-gray-500">13. 10. 2026 21:51:56</div>
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-[17px] geist">{activeMan.name}</span>
-                    <span className="text-zinc-400 text-[14px]">{activeMan.age}r</span>
-                    {activeMan.isNewUntil > Date.now() && <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#ff2d78] text-white font-bold animate-pulse">NOVÝ</span>}
-                  </div>
-                  <div className="text-[12px] text-zinc-500 geist">{activeMan.city} • {activeMan.status.toUpperCase()}</div>
-                  <div className="mt-2 flex gap-1.5">
-                    <span className="px-2 py-1 rounded-full bg-white/10 text-[11px]">💳 {activeMan.credits} kr</span>
-                    <span className="px-2 py-1 rounded-full bg-white/5 text-[11px] text-zinc-400">{activeMan.bio}</span>
+                    <span className="text-[11px] font-bold text-[#7b1fa2]">#24513474594</span>
+                    <div className="w-6 h-6 rounded-full bg-[#2196f3] flex items-center justify-center text-white"><UserCircle className="w-4 h-4" /></div>
                   </div>
                 </div>
-              </div>
-
-              <div className="mt-4 grid grid-cols-2 gap-2 text-[11px]">
-                <div className="bg-[#0e0e12] rounded-xl p-3 border border-white/[0.05]">
-                  <div className="text-zinc-500 uppercase tracking-wide text-[9px] mb-1">Registrácia</div>
-                  <div className="geist">{activeMan.registeredAt.toLocaleTimeString('sk-SK')}</div>
-                  <div className="text-zinc-500">{activeMan.registeredAt.toLocaleDateString('sk-SK')}</div>
+                <div className="mt-3 flex items-center justify-between text-[10px] text-gray-400 mono">
+                  <span>Kolotoč: Muž {currentManIdx+1}/{MEN.length} • Žena {currentWomanIdx+1}/{WOMEN.length} • Auto fronta 1s</span>
+                  <span className="hidden md:inline">{currentModerator} píše ako {currentWoman.displayName}</span>
                 </div>
-                <div className="bg-[#0e0e12] rounded-xl p-3 border border-white/[0.05]">
-                  <div className="text-zinc-500 uppercase tracking-wide text-[9px] mb-1">Písal žene</div>
-                  <div className="flex items-center gap-2">
-                    {activeWoman && <img src={shouldLoadExternal ? activeWoman.photo : activeWoman.fallback} onError={(e)=>{ (e.target as HTMLImageElement).src = activeWoman.fallback; }} className="w-6 h-6 rounded-full object-cover" alt={activeWoman.name} />}
-                    <span className="geist">{activeWoman?.name}</span>
-                  </div>
-                  <div className="text-zinc-500 text-[11px] mt-1">posledná {new Date().toLocaleTimeString('sk-SK',{hour:'2-digit', minute:'2-digit'})}</div>
-                </div>
-              </div>
-
-              <div className="mt-4 space-y-2">
-                <div className="h-2 bg-[#0e0e12] rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-violet-500 to-[#ff2d78]" style={{width: `${Math.min(100, activeMan.credits)}%`}} />
-                </div>
-                <div className="flex justify-between text-[10px] text-zinc-500 geist">
-                  <span>Kredity minuté dnes</span>
-                  <span>{100-activeMan.credits}% aktivita</span>
-                </div>
-              </div>
-
-              <div className="mt-4 flex gap-2">
-                <button onClick={()=>{ setToast(`Detail: ${activeMan.name} • ${activeMan.city} • ${activeMan.bio}`); setTimeout(()=>setToast(null),2000); }} className="flex-1 py-2 rounded-full bg-white text-black text-[12px] font-medium geist hover:bg-zinc-200">Profil detail</button>
-                <button onClick={()=>{ setToast(`Nahlásené: ${activeMan.name}`); setTimeout(()=>setToast(null),2000); }} className="px-3 py-2 rounded-full bg-white/10 text-[12px] hover:bg-white/20">🚩</button>
               </div>
             </div>
           ) : (
-            <div className="rounded-[20px] bg-[#1a1a23] border border-dashed border-white/10 p-8 text-center">
-              <div className="text-[13px] text-zinc-500 geist">Žiadny aktívny chlap</div>
-              <div className="text-[11px] text-zinc-600 mt-1">Vyber z fronty alebo počkaj na registráciu</div>
-            </div>
-          )}
-
-          <div className="rounded-[16px] bg-[#ff2d78]/10 border border-[#ff2d78]/20 p-3">
-            <div className="text-[11px] font-bold syne text-[#ff8ab3]">KOLOTOČ MODE</div>
-            <div className="text-[12px] text-zinc-300 mt-1 geist">FIFO • Po SEND prepne na ďalšieho automaticky • 800ms delay</div>
-            <div className="mt-2 flex gap-1 flex-wrap">
-              {queue.slice(0,5).map((q,i)=>{
-                const m = men.find(mm=>mm.id===q.manId);
-                return <span key={i} className="text-[10px] px-2 py-1 rounded-full bg-black/40 border border-white/10">{m?.name}</span>
-              })}
-            </div>
-          </div>
-
-          <div className="mt-auto pt-4 border-t border-white/5">
-            <div className="text-[10px] text-zinc-600 geist">Dnes registrovaní: <b className="text-zinc-300">{todayRegistered}</b> • Online ženy: 5 • Verzia finálna s fotkami</div>
-          </div>
-        </div>
-
-        {/* MIDDLE - CHAT */}
-        <div className="flex flex-col bg-[#0e0e12] min-h-[70vh] lg:min-h-0">
-          <div className="h-[56px] border-b border-white/[0.06] flex items-center justify-between px-4 bg-[#14141b]/80">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-white/10 grid place-items-center">💬</div>
-              <div>
-                <div className="text-[13px] font-medium geist leading-none">
-                  {activeMan ? `${activeMan.name} píše ${activeWoman?.name || '...'}` : 'Žiadna konverzácia'}
-                </div>
-                <div className="text-[11px] text-zinc-500 geist mt-1">{active ? `${activeMan?.credits} kreditov • ${convo.length} správ` : 'Vyber chlapa z fronty'}</div>
+            <div className="bg-white rounded-lg shadow-sm border border-[#e0e0e0] flex-1 p-4 md:p-6">
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+                <h2 className="text-[18px] font-bold flex items-center gap-2"><BarChart3 className="w-5 h-5 text-[#e91e63]" /> Štatistiky – {currentModerator}</h2>
+                <span className="inline-flex items-center gap-1.5 bg-[#fce4ec] border border-[#f48fb1] text-[#ad1457] text-[11px] font-bold px-3 py-1 rounded-full">0,5 kreditu / správa</span>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[11px] text-zinc-400">LIVE</span>
-            </div>
-          </div>
-
-          <div ref={chatRef} className="flex-1 overflow-auto p-4 space-y-3 bg-[radial-gradient(circle_at_50%_0%,rgba(255,45,120,0.08),transparent_50%)]">
-            {convo.map(m=>(
-              <div key={m.id} className={`flex ${m.from==='woman' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[78%] rounded-[18px] px-4 py-2.5 text-[13px] leading-[1.4] geist relative ${m.from==='man' ? 'bg-[#1f1f29] text-zinc-200 rounded-bl-[6px] border border-white/[0.06]' : 'bg-[#ff2d78] text-white rounded-br-[6px] shadow-[0_4px_20px_rgba(255,45,120,0.3)]'}`}>
-                  <div>{m.text}</div>
-                  <div className={`text-[10px] mt-1 ${m.from==='man' ? 'text-zinc-500' : 'text-white/70'}`}>{m.time} • {m.from==='man' ? 'platí' : 'odpoveď'}</div>
-                </div>
-              </div>
-            ))}
-            {convo.length===0 && active && (
-              <div className="text-center py-10 text-zinc-600 text-[13px] geist">Začni konverzáciu ako {activeWoman?.name} — chlap zaplatí 2 kredity</div>
-            )}
-          </div>
-
-          <div className="p-3 border-t border-white/[0.06] bg-[#14141b]">
-            <div className="flex items-end gap-2">
-              <button aria-label="Emoji picker" onClick={()=>setShowEmoji(!showEmoji)} className="w-10 h-10 rounded-full bg-white/10 grid place-items-center text-[18px] hover:bg-white/15">😊</button>
-              <div className="flex-1 relative">
-                <textarea
-                  value={input}
-                  onChange={e=>setInput(e.target.value)}
-                  onKeyDown={e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); handleSend(); } }}
-                  placeholder={activeWoman ? `Píšeš ako ${activeWoman.name}...` : 'Vyber konverzáciu'}
-                  rows={1}
-                  className="w-full resize-none rounded-[20px] bg-[#0e0e12] border border-white/10 px-4 py-3 pr-12 text-[13px] geist outline-none focus:border-[#ff2d78]/50"
-                />
-                <span className="absolute right-3 bottom-3 text-[10px] text-zinc-600">{input.length}/200</span>
-              </div>
-              <button aria-label="Send message" onClick={handleSend} disabled={!input.trim() || !active} className="h-10 px-5 rounded-full bg-white text-black text-[12px] font-bold geist hover:bg-zinc-200 disabled:opacity-30 disabled:pointer-events-none transition">SEND MESSAGE</button>
-            </div>
-
-            {showEmoji && (
-              <div className="mt-3 grid grid-cols-8 gap-1 p-2 rounded-xl bg-[#0e0e12] border border-white/10">
-                {['😍','😏','😘','🥰','😉','🤭','😎','🔥','💋','❤️','✨','🙈','😇','🥺','💦','👀','🍑','😈','💕','😅','🤔','😴','🥵','😂'].map(e=>(
-                  <button key={e} aria-label={`Emoji ${e}`} onClick={()=>setInput(prev=>prev+e)} className="w-8 h-8 grid place-items-center hover:bg-white/10 rounded-lg text-[18px]">{e}</button>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                {[
+                  { label: 'Zárobok Dnes', value: `${(totalSent*0.5).toFixed(2)} kreditov`, sub: `${totalSent} správ × 0,5 kreditu / správa` },
+                  { label: 'Tento týždeň', value: `${(totalSent*0.5*6.2).toFixed(1)} kreditov`, sub: `~${Math.round(totalSent*6.2)} správ × 0,5 kreditu / správa` },
+                  { label: 'Tento mesiac', value: `${(totalSent*0.5*24).toFixed(1)} kreditov`, sub: `~${Math.round(totalSent*24)} správ × 0,5 kreditu / správa` },
+                ].map(card=>(
+                  <div key={card.label} className="rounded-xl border bg-gradient-to-br from-white to-[#fce4ec] p-4">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-[#ad1457]">{card.label}</div>
+                    <div className="text-[28px] font-extrabold text-[#e91e63] mt-1">{card.value}</div>
+                    <div className="text-[11px] text-gray-500 mono mt-1">{card.sub}</div>
+                  </div>
                 ))}
               </div>
-            )}
-            <div className="mt-2 flex justify-between text-[10px] text-zinc-600 geist">
-              <span>Enter = odoslať • Shift+Enter = nový riadok</span>
-              <span>Chlap platí 2kr / správa</span>
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT - ŽENA PROFIL */}
-        <div className="border-l border-white/[0.06] bg-[#13131a] p-4 flex flex-col gap-4 overflow-auto">
-          <h2 className="syne text-[11px] tracking-[0.2em] text-zinc-500 font-bold">ŽENA PROFIL</h2>
-          {activeWoman ? (
-            <>
-              <div className="rounded-[24px] overflow-hidden bg-[#1a1a23] border border-white/[0.06]">
-                <div className="relative">
-                  <img src={shouldLoadExternal ? activeWoman.photo : activeWoman.fallback} alt={activeWoman.name} onError={(e)=>{ (e.target as HTMLImageElement).src = activeWoman.fallback; }} className="w-full h-[240px] object-cover bg-zinc-800" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-                  <div className="absolute top-3 left-3 flex gap-2">
-                    <span className="px-2 py-1 rounded-full bg-emerald-500 text-white text-[10px] font-bold">ONLINE</span>
-                    <span className="px-2 py-1 rounded-full bg-black/60 backdrop-blur text-white text-[10px]">{activeWoman.mood}</span>
-                  </div>
-                  <div className="absolute bottom-0 p-4 w-full">
-                    <div className="flex items-end justify-between">
-                      <div>
-                        <div className="instrument text-[28px] leading-none text-white italic">{activeWoman.name}</div>
-                        <div className="geist text-[12px] text-white/70 mt-1">{activeWoman.age} rokov • {activeWoman.city}</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="rounded-lg border p-4">
+                  <h3 className="font-bold text-[13px] mb-3 uppercase tracking-wider">Počet správ</h3>
+                  <div className="space-y-3">
+                    {[
+                      { k: 'Dnes', sent: totalSent, recv: totalReceived },
+                      { k: 'Týždeň', sent: totalSent*6, recv: totalReceived*5 },
+                      { k: 'Mesiac', sent: totalSent*24, recv: totalReceived*22 },
+                    ].map(r=>(
+                      <div key={r.k} className="flex items-center justify-between py-2 border-b last:border-0">
+                        <span className="font-medium">{r.k}</span>
+                        <span className="flex gap-3 mono text-[12px]"><span className="text-[#9c27b0]">Napísaných: {r.sent}</span><span className="text-[#4caf50]">Prijatých: {r.recv}</span></span>
                       </div>
-                      <div className="w-10 h-10 rounded-full bg-white text-black grid place-items-center font-bold text-[14px]">{activeWoman.age}</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-4 space-y-3">
-                  <div className="flex gap-2">
-                    <div className="flex-1 rounded-xl bg-[#0e0e12] p-3 border border-white/5">
-                      <div className="text-[9px] text-zinc-500 uppercase">Dnes odpísala</div>
-                      <div className="text-[18px] font-bold geist">24</div>
-                    </div>
-                    <div className="flex-1 rounded-xl bg-[#0e0e12] p-3 border border-white/5">
-                      <div className="text-[9px] text-zinc-500 uppercase">Zárobok</div>
-                      <div className="text-[18px] font-bold geist text-[#ff2d78]">12€</div>
-                    </div>
-                  </div>
-                  <div className="text-[12px] geist text-zinc-400 leading-relaxed">
-                    Ahoj, som {activeWoman.name}. Mám rada úprimných chlapov, rada sa smejem a rada flirtujem. Napíš mi a uvidíme kam to povedie 😏
-                  </div>
-                  <div className="flex gap-1.5 flex-wrap">
-                    {['Flirt','Vážny vzťah','Pokec','Káva'].map(tag=>(
-                      <span key={tag} className="px-2.5 py-1 rounded-full bg-white/10 text-[11px] border border-white/5">{tag}</span>
                     ))}
                   </div>
                 </div>
+                <div className="rounded-lg border p-4">
+                  <h3 className="font-bold text-[13px] mb-3 uppercase tracking-wider">Rozdelenie moderátorov</h3>
+                  {[
+                    { name: 'Tomáš', sent: currentModerator==='Tomáš' ? totalSent : 28, earn: currentModerator==='Tomáš' ? totalSent*0.5 : 14, color: 'bg-[#e91e63]' },
+                    { name: 'Nikola', sent: currentModerator==='Nikola' ? totalSent : 32, earn: currentModerator==='Nikola' ? totalSent*0.5 : 16, color: 'bg-[#9c27b0]' },
+                  ].map(m=>(
+                    <div key={m.name} className="flex items-center gap-3 py-3 border-b last:border-0">
+                      <div className={`w-8 h-8 rounded-full ${m.color} text-white flex items-center justify-center font-bold`}>{m.name[0]}</div>
+                      <div className="flex-1">
+                        <div className="font-semibold">{m.name} {m.name==='Tomáš' && <span className="text-[10px] bg-black/10 px-1.5 py-0.5 rounded ml-1">Majiteľ</span>}</div>
+                        <div className="text-[11px] text-gray-500 mono">{m.sent} správ • {m.earn.toFixed(2)} kreditov <span className="text-[10px]">• 0,5 kreditu / správa</span></div>
+                      </div>
+                      <div className="w-20 h-2 rounded-full bg-gray-100 overflow-hidden"><div className={`h-full ${m.color}`} style={{ width: `${Math.min(100, m.sent)}%` }} /></div>
+                    </div>
+                  ))}
+                </div>
               </div>
-
-              <div className="grid grid-cols-5 gap-2">
-                {women.map(w=>(
-                  <button key={w.id} aria-label={`Profil ${w.name}`} onClick={()=> handleWomanSwitch(w.id)} className={`group rounded-xl overflow-hidden aspect-[3/4] border ${activeWoman.id===w.id ? 'border-[#ff2d78]' : 'border-white/10 hover:border-white/20'} relative`}>
-                    <img src={shouldLoadExternal ? w.photo : w.fallback} alt={w.name} onError={(e)=>{ (e.target as HTMLImageElement).src = w.fallback; }} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                    <span className="absolute bottom-1 left-1 text-[10px] text-white font-medium">{w.name}</span>
-                  </button>
-                ))}
-              </div>
-            </>
-          ) : (
-            <div className="text-zinc-600 text-[13px] geist">Vyber konverzáciu pre zobrazenie profilu ženy</div>
+              <button onClick={()=>setShowStats(false)} className="mt-6 bg-[#e91e63] text-white px-4 py-2 rounded font-bold text-xs">← Späť do chatu</button>
+            </div>
           )}
+        </section>
 
-          <div className="rounded-2xl bg-[#1a1a23] border border-white/5 p-3">
-            <div className="text-[10px] text-zinc-500 uppercase tracking-wide syne font-bold mb-2">Rýchle odpovede</div>
-            <div className="space-y-1.5">
-              {[
-                'Ahoj, ako sa máš? 😊',
-                'Si zlatý, ďakujem za kompliment 🥰',
-                'Čo robíš dnes večer?',
-                'Máš fotku? Ukáž sa mi 😏'
-              ].map(t=>(
-                <button key={t} onClick={()=>setInput(t)} className="w-full text-left px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-[12px] geist border border-white/5">{t}</button>
+        {/* RIGHT MODERATOR – UNIFIED STATUS */}
+        <section className="w-full lg:w-[300px] xl:w-[340px] flex-shrink-0 flex flex-col gap-3">
+          <div className="bg-white rounded-lg shadow-sm border border-[#e0e0e0] overflow-hidden flex flex-col">
+            <div className="bg-gradient-to-r from-[#4caf50] to-[#388e3c] text-white px-3 py-2 flex items-center justify-between">
+              <div className="flex items-center gap-2 font-bold text-[13px] tracking-wider">Moderator</div>
+              <div className="flex items-center gap-1">
+                <button onClick={prevWoman} className="w-6 h-6 rounded bg-black/15 hover:bg-black/25 flex items-center justify-center"><ChevronLeft className="w-4 h-4" /></button>
+                <span className="text-[11px] mono bg-black/15 px-1.5 py-0.5 rounded">{currentWomanIdx+1}/{WOMEN.length}</span>
+                <button onClick={nextWoman} className="w-6 h-6 rounded bg-black/15 hover:bg-black/25 flex items-center justify-center"><ChevronRight className="w-4 h-4" /></button>
+              </div>
+            </div>
+
+            <div className="p-3 pb-0 flex flex-col items-center">
+              <div className="relative">
+                <img src={currentWoman.photo} alt={currentWoman.displayName} className="w-[92px] h-[92px] rounded-full object-cover border-2 border-white shadow-md" />
+                <div className="absolute bottom-0.5 right-0.5 w-4 h-4 rounded-full bg-[#4caf50] border-2 border-white animate-pulse" />
+              </div>
+              <div className="mt-2 text-center">
+                <div className="font-extrabold text-[14px]">{currentWoman.displayName}</div>
+                <div className="text-[11px] text-gray-500 mono">{currentWoman.label}</div>
+                <button className="mt-1 text-[11px] text-[#7b1fa2] font-medium hover:underline">Mehr anzeigen</button>
+              </div>
+            </div>
+
+            <div className="p-3">
+              <div className="bg-[#fafafa] border border-[#e0e0e0] rounded-xl overflow-hidden shadow-sm">
+                <div className="px-3 py-2.5 bg-white border-b border-[#eeeeee] flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#4caf50] animate-pulse shadow-[0_0_0_3px_rgba(76,175,80,0.2)]"></span>
+                    <span className="text-[12px] font-bold text-[#2e7d32]">Online</span>
+                    <span className="text-[11px] text-gray-400">•</span>
+                    <span className="text-[11px] font-medium">{currentWoman.city}</span>
+                  </div>
+                  <span className="text-[10px] font-bold bg-[#f3e5f5] text-[#7b1fa2] border border-[#ce93d8] px-2.5 py-1 rounded-full flex items-center gap-1">
+                    <Coins className="w-3 h-3" /> {currentWoman.earnings}
+                  </span>
+                </div>
+
+                <div className="divide-y divide-[#f0f0f0]">
+                  <StatusRow icon={MapPin} label="Mesto" value={currentWoman.city} />
+                  <StatusRow icon={Calendar} label="Vek" value={`${currentWoman.age} rokov`} />
+                  <StatusRow icon={Ruler} label="Výška" value={currentWoman.height} />
+                  <StatusRow icon={Scissors} label="Vlasy" value={currentWoman.hair} />
+                  <StatusRow icon={PersonStanding} label="Postava" value={currentWoman.figure} />
+                  <StatusRow icon={Briefcase} label="Práca" value={currentWoman.job} />
+                </div>
+
+                {/* carousel inside status block */}
+                <div className="px-3 py-2.5 bg-white border-t border-[#eeeeee]">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2">Fotky profilu • 5</div>
+                  <div className="flex gap-1.5">
+                    {WOMEN.map((w,i)=>(
+                      <button key={w.id} onClick={()=>setCurrentWomanIdx(i)} className={`relative flex-shrink-0 w-[48px] h-[48px] rounded-xl overflow-hidden border-2 transition-all ${i===currentWomanIdx ? 'border-[#e91e63] shadow-md scale-[1.05]' : 'border-transparent opacity-70 hover:opacity-100 hover:border-gray-200'}`}>
+                        <img src={w.photo} alt={w.name} className="w-full h-full object-cover" />
+                        {i===currentWomanIdx && <span className="absolute inset-0 ring-1 ring-inset ring-[#e91e63]/20" />}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-2 text-[10px] text-[#4caf50] italic">* Profile updated... dnes • {currentWoman.label}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="px-3 pb-3 pt-0">
+              <div className="rounded-xl border border-[#ce93d8] bg-[#f3e5f5] p-2.5 shadow-sm">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-[#7b1fa2] flex items-center gap-1"><span>📓</span> Denník – Moderátorka ({currentWoman.name})</label>
+                <textarea
+                  value={moderatorNotesMap[currentWoman.id] || ''}
+                  onChange={e=>setModeratorNotesMap(m=>({...m, [currentWoman.id]: e.target.value}))}
+                  placeholder="Poznámky k persone..."
+                  className="w-full mt-1.5 min-h-[92px] p-2.5 text-[12px] bg-white border border-[#ce93d8] rounded-lg focus:outline-none focus:border-[#9c27b0] resize-none shadow-inner"
+                />
+                <div className="text-[10px] text-gray-500 mt-1.5 mono">Uložené len v pamäti • {currentWoman.displayName} • {currentWoman.earnings}</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {showOnlineList && (
+        <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={()=>setShowOnlineList(null)} />
+          <div className="relative bg-white w-full md:max-w-[420px] max-h-[85vh] md:rounded-xl rounded-t-xl shadow-2xl border flex flex-col overflow-hidden">
+            <div className={`${showOnlineList==='online' ? 'bg-[#4caf50]' : 'bg-[#757575]'} text-white px-5 py-3 flex items-center justify-between`}>
+              <div className="font-bold flex items-center gap-2">
+                {showOnlineList==='online' ? <><div className="w-2 h-2 bg-white rounded-full animate-pulse" /> Prihlásení chlapi ({MEN.filter(m=>m.online).length})</> : <><div className="w-2 h-2 bg-white/60 rounded-full" /> Odhlásení chlapi ({MEN.filter(m=>!m.online).length})</>}
+              </div>
+              <button onClick={()=>setShowOnlineList(null)} className="w-7 h-7 rounded bg-white/20 hover:bg-white/30 flex items-center justify-center"><X className="w-4 h-4" /></button>
+            </div>
+            <div className="flex gap-2 p-2 border-b bg-[#fafafa]">
+              <button onClick={()=>setShowOnlineList('online')} className={`flex-1 py-2 rounded-full text-xs font-bold border ${showOnlineList==='online' ? 'bg-[#4caf50] text-white border-[#4caf50]' : 'bg-white text-gray-600 border-gray-200'}`}>Online • {MEN.filter(m=>m.online).length}</button>
+              <button onClick={()=>setShowOnlineList('offline')} className={`flex-1 py-2 rounded-full text-xs font-bold border ${showOnlineList==='offline' ? 'bg-[#757575] text-white border-[#757575]' : 'bg-white text-gray-600 border-gray-200'}`}>Offline • {MEN.filter(m=>!m.online).length}</button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-2 space-y-1 bg-[#f5f5f5]">
+              {MEN.filter(m=> showOnlineList==='online' ? m.online : !m.online).map(man=>(
+                <div key={man.id} className="bg-white border rounded-lg p-2.5 flex gap-3 items-center hover:shadow-sm transition-shadow">
+                  <div className="relative">
+                    <img src={man.photo} alt={man.displayName} className="w-10 h-10 rounded-full object-cover border" onError={e=>{(e.target as HTMLImageElement).src = man.avatar}} />
+                    <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${man.online ? 'bg-[#4caf50]' : 'bg-gray-400'}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-bold text-[13px]">{man.displayName}</span>
+                      <span className="text-[11px] text-gray-500">{man.age} • {man.city}</span>
+                    </div>
+                    <div className="text-[11px] text-gray-500 truncate">{man.sexPref} • {man.credits} kreditov</div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    {man.online ? <span className="text-[10px] bg-[#e8f5e9] text-[#2e7d32] px-2 py-0.5 rounded-full border border-[#c8e6c9] flex items-center gap-1"><Check className="w-3 h-3" /> Online</span> : <span className="text-[10px] bg-[#eeeeee] text-[#616161] px-2 py-0.5 rounded-full border">Offline</span>}
+                  </div>
+                </div>
               ))}
             </div>
+            <div className="p-3 border-t bg-white flex justify-between items-center">
+              <span className="text-[11px] mono text-gray-500">Filter podľa isOnline • Kolotoč</span>
+              <button onClick={()=>{ setIsOnline(!isOnline); setShowOnlineList(!isOnline ? 'online' : 'offline'); }} className="text-[11px] bg-[#e91e63] text-white px-3 py-1 rounded-full font-bold">
+                Prepnúť na {isOnline ? 'Odhlásený' : 'Prihlásený'}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* TOAST bottom center */}
+      )}
+      {showFronta && (
+        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={()=>setShowFronta(false)} />
+          <div className="relative bg-white w-full md:max-w-[560px] max-h-[85vh] md:rounded-xl rounded-t-xl shadow-2xl border flex flex-col overflow-hidden">
+            <div className="bg-[#e91e63] text-white px-5 py-3 flex items-center justify-between">
+              <div className="font-bold flex items-center gap-2"><Clock className="w-4 h-4" /> Čakajúce správy – Fronta ({waitingQueue.length})</div>
+              <button onClick={()=>setShowFronta(false)} className="w-7 h-7 rounded bg-white/20 hover:bg-white/30 flex items-center justify-center">✕</button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-[#fafafa]">
+              {waitingQueue.length===0 ? (
+                <div className="py-16 text-center">
+                  <div className="w-12 h-12 rounded-full bg-gray-100 mx-auto flex items-center justify-center mb-3">📭</div>
+                  <div className="font-semibold">Fronta je prázdna</div>
+                  <div className="text-[12px] text-gray-500 mt-1">Po odoslaní správy sa zákazník po 1 sekunde automaticky presunie sem.</div>
+                </div>
+              ) : waitingQueue.map((item,idx)=>(
+                <div key={idx} className="bg-white border rounded-lg p-3 flex gap-3">
+                  <img src={item.man.photo} className="w-10 h-10 rounded-full object-cover border" alt={item.man.name} onError={e=>{(e.target as HTMLImageElement).src = item.man.avatar}} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-[13px]">{item.man.name} → {item.woman.name}</span>
+                      <span className="text-[10px] mono text-gray-400">{item.timestamp.toLocaleTimeString()}</span>
+                    </div>
+                    <div className="text-[12px] text-gray-600 truncate mt-0.5">"{item.lastMessage}"</div>
+                    <div className="flex gap-1 mt-2">
+                      <button onClick={()=>{ setCurrentManIdx(MEN.findIndex(m=>m.id===item.man.id)); setCurrentWomanIdx(WOMEN.findIndex(w=>w.id===item.woman.id)); setShowFronta(false); setMessages([{from:'customer', text: 'Pokračujeme?', time: 'teraz'}, {from:'moderator', text: item.lastMessage, time: 'predtým'}]); }} className="text-[11px] bg-[#e91e63] text-white px-2.5 py-1 rounded font-semibold">Otvoriť chat</button>
+                      <button onClick={()=>setWaitingQueue(q=>q.filter((_,i)=>i!==idx))} className="text-[11px] bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded">Odstrániť</button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="p-3 border-t bg-white flex justify-between items-center">
+              <span className="text-[11px] mono text-gray-500">Systém kolotoč • FIFO • Auto presun po 1s</span>
+              <button onClick={()=>setWaitingQueue([])} className="text-[11px] text-[#d32f2f] font-semibold hover:underline">Vyprázdniť frontu</button>
+            </div>
+          </div>
+        </div>
+      )}
       {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] px-4 py-2 rounded-full bg-white text-black text-[12px] font-medium geist shadow-2xl border border-black/10 animate-[slideUp_0.3s_ease]">
-          {toast}
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-[#212121] text-white px-4 py-2.5 rounded-full text-[13px] shadow-xl flex items-center gap-2">
+          <div className="w-2 h-2 bg-[#4caf50] rounded-full animate-pulse" /> {toast}
         </div>
       )}
-
-      {/* MODAL CHLAPI */}
-      {showMenModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={()=>setShowMenModal(false)} />
-          <div className="relative w-full max-w-[980px] max-h-[85vh] rounded-[24px] bg-[#16161f] border border-white/10 shadow-2xl flex flex-col overflow-hidden">
-            <div className="p-5 border-b border-white/10 flex items-center justify-between">
-              <div>
-                <h3 className="syne font-bold text-[18px]">Chlapi — tabuľka</h3>
-                <p className="text-[12px] text-zinc-500 geist">FIFO fronta • {men.length} celkovo • {queue.length} čaká</p>
-              </div>
-              <button aria-label="Zavrieť" onClick={()=>setShowMenModal(false)} className="w-8 h-8 rounded-full bg-white/10 grid place-items-center">✕</button>
-            </div>
-            <div className="overflow-auto">
-              <table className="w-full text-left">
-                <thead className="sticky top-0 bg-[#16161f] border-b border-white/10 text-[10px] uppercase tracking-wide text-zinc-500 syne">
-                  <tr>
-                    <th className="p-3 font-bold">Meno</th>
-                    <th className="p-3">Vek</th>
-                    <th className="p-3">Mesto</th>
-                    <th className="p-3">Písal žene</th>
-                    <th className="p-3">Status</th>
-                    <th className="p-3">Kredity</th>
-                    <th className="p-3">Čas registrácie</th>
-                    <th className="p-3">Otvoriť</th>
-                  </tr>
-                </thead>
-                <tbody className="geist text-[13px]">
-                  {men.map(m=>{
-                    const q = queue.find(qq=>qq.manId===m.id);
-                    const w = q ? women.find(ww=>ww.id===q.womanId) : null;
-                    return (
-                      <tr key={m.id} className="border-b border-white/[0.04] hover:bg-white/[0.04]">
-                        <td className="p-3 flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full bg-zinc-700 grid place-items-center text-[11px] font-bold">{m.avatar}</div>
-                          <span className="font-medium">{m.name}</span>
-                          {m.isNewUntil>Date.now() && <span className="px-1.5 py-0.5 rounded bg-[#ff2d78] text-white text-[9px] font-bold">NOVÝ</span>}
-                        </td>
-                        <td className="p-3 text-zinc-400">{m.age}</td>
-                        <td className="p-3">{m.city}</td>
-                        <td className="p-3">{w ? <span className="flex items-center gap-1"><img src={shouldLoadExternal ? w.photo : w.fallback} alt={w.name} onError={(e)=>{ (e.target as HTMLImageElement).src = w.fallback; }} className="w-5 h-5 rounded-full object-cover" />{w.name}</span> : <span className="text-zinc-600">—</span>}</td>
-                        <td className="p-3"><span className={`px-2 py-1 rounded-full text-[11px] ${m.status==='platiaci'?'bg-emerald-500/20 text-emerald-300': m.status==='nový'?'bg-[#ff2d78]/20 text-[#ff8ab3]':'bg-white/10 text-zinc-300'}`}>{m.status}</span></td>
-                        <td className="p-3 font-mono">{m.credits}kr</td>
-                        <td className="p-3 text-zinc-500 text-[12px]">{m.registeredAt.toLocaleTimeString('sk-SK')}</td>
-                        <td className="p-3">
-                          <button aria-label={`Otvoriť ${m.name}`} onClick={()=> { if(q){ openConversation(m.id, q.womanId); } else { setToast(`${m.name} nemá čakajúcu správu`); setTimeout(()=>setToast(null),2000); } }} className="px-3 py-1 rounded-full bg-white text-black text-[11px] font-bold hover:bg-zinc-200">Otvoriť</button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showStats && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={()=>setShowStats(false)} />
-          <div className="relative w-full max-w-[420px] rounded-[24px] bg-[#16161f] border border-white/10 p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="syne font-bold text-[18px]">Stats</h3>
-              <button aria-label="Zavrieť stats" onClick={()=>setShowStats(false)} className="w-8 h-8 rounded-full bg-white/10 grid place-items-center">✕</button>
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="rounded-2xl bg-[#0e0e12] border border-white/5 p-4">
-                <div className="text-[10px] text-zinc-500 uppercase syne">Deň</div>
-                <div className="text-[16px] font-bold geist mt-1">48kr / 24€</div>
-              </div>
-              <div className="rounded-2xl bg-[#0e0e12] border border-white/5 p-4">
-                <div className="text-[10px] text-zinc-500 uppercase syne">Týždeň</div>
-                <div className="text-[16px] font-bold geist mt-1">320kr / 160€</div>
-              </div>
-              <div className="rounded-2xl bg-[#0e0e12] border border-white/5 p-4">
-                <div className="text-[10px] text-zinc-500 uppercase syne">Mesiac</div>
-                <div className="text-[16px] font-bold geist mt-1">1240kr / 620€</div>
-              </div>
-            </div>
-            <div className="mt-4 space-y-2 text-[12px] geist">
-              <div className="flex justify-between p-3 rounded-xl bg-white/5"><span className="text-zinc-500">Fronta</span><b>{queue.length} čakajúcich</b></div>
-              <div className="flex justify-between p-3 rounded-xl bg-white/5"><span className="text-zinc-500">Dnes registrovaní</span><b>{todayRegistered}</b></div>
-              <div className="flex justify-between p-3 rounded-xl bg-[#ff2d78]/10 border border-[#ff2d78]/20"><span className="text-[#ff8ab3]">Aktívny kolotoč</span><b className="text-white">{activeMan?.name} → {activeWoman?.name}</b></div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showPanic && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={()=>setShowPanic(false)} />
-          <div className="relative w-full max-w-[360px] rounded-[24px] bg-[#1a0f14] border border-[#ff2d78]/30 p-6 text-center">
-            <div className="w-12 h-12 rounded-full bg-[#ff2d78] mx-auto grid place-items-center text-[20px]">🚨</div>
-            <h3 className="syne font-bold text-[18px] mt-3">Panic Room</h3>
-            <p className="text-[12px] text-zinc-400 geist mt-2">Okamžité skrytie chatu. Prepne na neutrálnu stránku.</p>
-            <div className="mt-5 grid gap-2">
-              <button aria-label="Zavrieť panic" onClick={()=>setShowPanic(false)} className="w-full py-3 rounded-full bg-white text-black font-bold geist text-[13px]">Zavrieť • Vrátiť sa</button>
-              <button aria-label="Otvoriť Google" onClick={()=>{ setToast('Panic: presmerovanie na Google...'); setTimeout(()=>{ window.open('https://www.google.com','_blank'); setShowPanic(false); }, 800); }} className="w-full py-3 rounded-full bg-white/10 text-zinc-300 geist text-[12px] hover:bg-white/20">Otvoriť Google (ESC)</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <style>{`@keyframes slideUp{from{transform:translate(-50%,20px);opacity:0}to{transform:translate(-50%,0);opacity:1}}`}</style>
+      <div className="text-center text-[10px] text-gray-400 mono py-2">ChatTool Nova Verzia • Verzia 5 - status dokopy • Moderátori: Tomáš (Majiteľ) + Nikola • Kolotoč muži/ženy • Fronta po 1s • Login na začiatku</div>
     </div>
   );
 }
