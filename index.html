@@ -14,10 +14,10 @@
 <body class="h-screen flex flex-col">
 
   <!-- HEADER -->
-  <header class="h- bg-black border-b border-white/10 flex items-center justify-between px-4">
-    <div class="font-black text-">
+  <header class="h-[54px] bg-black border-b border-white/10 flex items-center justify-between px-4">
+    <div class="font-black text-[20px]">
       <span class="text-[#ff2d78]">Spoznaj</span>Ma.sk
-      <span class="text- bg-[#ff2d78] px-2 py-0.5 rounded ml-2">MOD v4.2</span>
+      <span class="text-[10px] bg-[#ff2d78] px-2 py-0.5 rounded ml-2">MOD v4.2</span>
     </div>
     <div class="text-xs opacity-60">Chlapi: 11 | Kredity: 127</div>
   </header>
@@ -25,17 +25,17 @@
   <div class="flex flex-1 overflow-hidden">
 
     <!-- LAVY STLP - CHLAP -->
-    <div class="w- border-r border-white/10 bg-[#111118] flex flex-col">
+    <div class="w-[320px] border-r border-white/10 bg-[#111118] flex flex-col">
       <div class="p-4 border-b border-white/10 flex gap-3">
         <img id="guyPhoto" class="w-14 h-14 rounded-full object-cover">
         <div>
           <div id="guyName" class="font-bold"></div>
           <div id="guyCity" class="text-xs opacity-60"></div>
-          <div class="text- mt-1"><span class="w-2 h-2 bg-green-400 rounded-full inline-block"></span> Online</div>
+          <div class="text-[11px] mt-1"><span class="w-2 h-2 bg-green-400 rounded-full inline-block"></span> Online</div>
         </div>
       </div>
       <div class="p-2 flex-1 overflow-auto">
-        <div class="text- font-black opacity-30 px-2 py-2">
+        <div class="text-[10px] font-black opacity-30 px-2 py-2">
           KOLOTOČ <span id="fifoLen" class="bg-[#ff2d78] px-2 py-0.5 rounded-full ml-2"></span>
         </div>
         <div id="fifoList" class="space-y-1"></div>
@@ -44,7 +44,7 @@
 
     <!-- STRED - CHAT -->
     <div class="flex-1 flex flex-col bg-[#15151e]">
-      <div class="h- border-b border-white/10 flex items-center gap-3 px-4 bg-[#111118]">
+      <div class="h-[56px] border-b border-white/10 flex items-center gap-3 px-4 bg-[#111118]">
         <img id="activeAvatar" src="./1.jpg" class="w-9 h-9 rounded-full object-cover">
         <div id="activeName" class="font-bold text-sm"></div>
       </div>
@@ -56,13 +56,13 @@
     </div>
 
     <!-- PRAVY STLP - ZENY TVOJE FOTKY 1-5.jpg -->
-    <div class="w- border-l border-white/10 bg-[#0e0e12] flex flex-col">
+    <div class="w-[340px] border-l border-white/10 bg-[#0e0e12] flex flex-col">
       <div class="p-4">
-        <img id="womanBig" src="./1.jpg" class="w-full h- object-cover rounded- border border-white/10">
-        <h2 id="womanName" class="font-black text- mt-3"></h2>
+        <img id="womanBig" src="./1.jpg" class="w-full h-[300px] object-cover rounded-[18px] border border-white/10">
+        <h2 id="womanName" class="font-black text-[20px] mt-3"></h2>
         <p id="womanMeta" class="text-xs opacity-60"></p>
       </div>
-      <div class="px-4 py-2 border-t border-white/10 text- font-black opacity-30">ŽENY -./1.jpg až./5.jpg</div>
+      <div class="px-4 py-2 border-t border-white/10 text-[10px] font-black opacity-30">ŽENY -./1.jpg až./5.jpg</div>
       <div id="womenPick" class="px-3 pb-3 grid grid-cols-5 gap-2"></div>
     </div>
 
@@ -111,7 +111,7 @@ function render(){
     let div=document.createElement('div');
     div.className=`flex gap-2.5 p-2.5 rounded-xl cursor-pointer border ${i===activeIdx?'bg-[#ff2d78]/10 border-[#ff2d78]/30':'bg-white/5 border-white/5'}`;
     div.onclick=()=>{activeIdx=i;render();addMsg(g.lastMsg,false)};
-    div.innerHTML=`<img src="${g.photo}" class="w-9 h-9 rounded-full"><div class="flex-1"><div class="font-bold text-">${g.name}, ${g.age}</div><div class="text- opacity-60 truncate">${g.lastMsg}</div></div>`;
+    div.innerHTML=`<img src="${g.photo}" class="w-9 h-9 rounded-full"><div class="flex-1"><div class="font-bold text-[12px]">${g.name}, ${g.age}</div><div class="text-[11px] opacity-60 truncate">${g.lastMsg}</div></div>`;
     fl.appendChild(div);
   });
 
@@ -119,7 +119,7 @@ function render(){
   WOMEN.forEach(w=>{
     let b=document.createElement('button');
     b.className=`relative rounded-xl overflow-hidden border-2 ${w.id===activeWoman.id?'border-[#ff2d78]':'border-transparent'}`;
-    b.innerHTML=`<img src="${w.photo}" class="w-full h- object-cover"><div class="absolute bottom-0 left-0 right-0 bg-black/60 text- text-center py-0.5">${w.name}</div>`;
+    b.innerHTML=`<img src="${w.photo}" class="w-full h-[64px] object-cover"><div class="absolute bottom-0 left-0 right-0 bg-black/60 text-[10px] text-center py-0.5">${w.name}</div>`;
     b.onclick=()=>{activeWoman=w;render()};
     wp.appendChild(b);
   });
@@ -129,7 +129,7 @@ function addMsg(t,me){
   let box=document.getElementById('chatBox');
   let d=document.createElement('div');
   d.className=me?'flex justify-end':'flex justify-start';
-  d.innerHTML=`<div class="${me?'bg-[#ff2d78]':'bg-white/10'} px-4 py-2.5 rounded- max-w-[72%] text-">${t}</div>`;
+  d.innerHTML=`<div class="${me?'bg-[#ff2d78]':'bg-white/10'} px-4 py-2.5 rounded-[18px] max-w-[72%] text-[13px]">${t}</div>`;
   box.appendChild(d); box.scrollTop=box.scrollHeight;
 }
 
