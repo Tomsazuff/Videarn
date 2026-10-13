@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SpoznajMa.sk</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,system-ui}
+body{background:#0f0f0f;color:#fff}
+.card{background:linear-gradient(135deg,#d6457c,#7a1f3a);border-radius:32px;padding:20px;margin:12px}
+.badge{background:#000;color:#fff;border-radius:999px;padding:6px 12px;font-size:10px;font-weight:800;display:inline-block}
+.avatar{width:180px;height:180px;border-radius:999px;border:4px solid #fff;object-fit:cover;display:block;margin:16px auto}
+.btn{background:#000;color:#fff;border-radius:999px;padding:12px 20px;border:0;font-weight:800;cursor:pointer}
+.btn-white{background:#fff;color:#000}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:99;padding:16px}
+.modal.open{display:flex}
+.box{background:#1a1a1a;border:1px solid #ffffff22;border-radius:28px;max-width:480px;width:100%;padding:20px}
+.warn{background:#4a1a2a;border-radius:16px;padding:12px;font-size:12px;margin:12px 0}
+input{width:100%;height:44px;border-radius:999px;background:#ffffff11;border:1px solid #ffffff22;padding:0 16px;color:#fff;outline:none;margin:6px 0}
+</style>
+</head>
+<body>
+
+<header style="background:#0a0a0a;padding:14px 20px;display:flex;justify-content:space-between;position:sticky;top:0;z-index:10">
+<b style="font-size:22px">SpoznajMa<span style="color:#d6457c">.sk</span></b>
+<div style="display:flex;gap:8px"><span id="creditBadge" style="background:#ffffff11;border-radius:999px;padding:6px 12px">0 kr</span><button class="btn" onclick="openReg()">Registrovať</button></div>
+</header>
+
+<div id="profiles" style="max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px;padding:12px"></div>
+
+<footer style="text-align:center;padding:30px;color:#ffffff66;font-size:11px;border-top:1px solid #ffffff0f;margin-top:30px">
+<b>MODEROVANÝ CHAT 18+ - ZÁBAVNÝ PORTÁL</b><br>
+Ilustračné foto - moderátor. 0,5 kr / správa.<br>
+5€=10kr | 10€=20+5%=21kr | 20€=40+10%=44kr | 50€=100+15%=115kr | registrácia 2kr zdarma
+</footer>
+
+<div id="reg" class="modal"><div class="box"><h2>Registrácia 18+</h2><input id="nick" placeholder="Prezývka"><input id="age" type="number" value="22"><input id="email" placeholder="Email"><input id="pass" type="password" placeholder="Heslo"><label style="font-size:11px;display:flex;gap:8px;margin:10px 0"><input type="checkbox" id="agree" style="width:16px"> Mám 18+</label><div id="regErr" style="color:#ff5a5a;font-size:12px"></div><button class="btn-white btn" style="width:100%;margin-top:10px" onclick="doReg()">Vytvoriť účet - 2 kr zdarma</button><button class="btn" style="width:100%;margin-top:8px;background:#ffffff11" onclick="closeReg()">Zavrieť</button></div></div>
+
+<div id="cred" class="modal"><div class="box"><h2>Dobiť kredity</h2><div id="packs"></div><button class="btn-white btn" style="width:100%;margin-top:14px" onclick="buyPack()">Zaplatit</button><button class="btn" style="width:100%;margin-top:8px;background:#ffffff11" onclick="closeCred()">Zavrieť</button></div></div>
+
+<div id="chat" class="modal"><div class="box" style="height:80vh;display:flex;flex-direction:column;padding:0;overflow:hidden"><div style="background:linear-gradient(90deg,#d6457c,#7a1f3a);padding:12px 16px;display:flex;justify-content:space-between"><div style="display:flex;gap:10px;align-items:center"><img id="chatImg" src="" style="width:40px;height:40px;border-radius:999px"><div id="chatName" style="font-weight:800"></div></div><button onclick="closeChat()" style="background:#0006;border:0;color:#fff;width:32px;height:32px;border-radius:999px">✕</button></div><div class="warn"><span style="color:#ffcc00;font-weight:800">Upozornenie:</span> Moderovaný 0,5 kr / správa.</div><div id="msgs" style="flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px"></div><div style="padding:10px;border-top:1px solid #ffffff11;display:flex;gap:8px"><input id="msgInput" placeholder="Napíš správu..." style="flex:1"><button class="btn-white btn" onclick="sendMsg()">Odoslať</button></div></div></div>
+
+<script>
+const BASE="https://raw.githubusercontent.com/Tomsazuff/Videarn/main/";
+const PROFILES=[
+{name:"Linda",age:24,city:"Bratislava",img:BASE+"1.jpg"},
+{name:"Blondína",age:26,city:"Nitra",img:BASE+"2.jpg"},
+{name:"Kučeravá",age:27,city:"Košice",img:BASE+"3.jpg"},
+{name:"Hnedovláska",age:25,city:"Trnava",img:BASE+"4.jpg"},
+{name:"Hnedovláska",age:23,city:"Žilina",img:BASE+"5.jpg"},
+];
+const PACKS=[
+{total:10,price:"5€",label:"10 kreditov = 20 správ"},
+{total:21,price:"10€",label:"+5% bonus = 21 kr = 42 správ"},
+{total:44,price:"20€",label:"+10% bonus = 44 kr = 88 správ"},
+{total:115,price:"50€",label:"+15% bonus = 115 kr = 230 správ"},
+];
+let credits=0,isReg=false,curProfile=null,selectedPack=2;
+function renderProfiles(){
+  const el=document.getElementById('profiles');el.innerHTML='';
+  PROFILES.forEach(p=>{
+    const d=document.createElement('div');d.className='card';
+    d.innerHTML=`<div style="display:flex;justify-content:space-between"><span class="badge">ILUSTRAČNÁ FOTKA - MODERÁTOR</span><span class="badge">Zábavný chat</span></div>
+    <img class="avatar" src="${p.img}">
+    <div style="font-size:28px;font-weight:800">${p.name}, ${p.age}</div>
+    <div style="font-size:13px;opacity:.8">${p.city} • Práve online</div>
+    <div class="warn"><span style="color:#ffcc00;font-weight:800">Upozornenie:</span> Moderovaný 0,5 kr / správa, slúži na zábavu.</div>
+    <div style="display:flex;gap:8px"><button class="btn" style="flex:1">Napísať správu</button><button class="btn" style="background:#ffffff22">Kredity</button></div>`;
+    d.querySelectorAll('button')[0].onclick=()=>writeMsg(p);
+    d.querySelectorAll('button')[1].onclick=()=>openCred();
+    el.appendChild(d);
+  });
+}
+function openReg(){document.getElementById('reg').classList.add('open')}
+function closeReg(){document.getElementById('reg').classList.remove('open')}
+function openCred(){renderPacks();document.getElementById('cred').classList.add('open')}
+function closeCred(){document.getElementById('cred').classList.remove('open')}
+function renderPacks(){
+  const el=document.getElementById('packs');el.innerHTML='';
+  PACKS.forEach((p,i)=>{
+    const div=document.createElement('div');
+    div.style.cssText='border:1px solid '+(selectedPack===i?'#d6457c':'#ffffff22')+';border-radius:16px;padding:12px;margin:8px 0;cursor:pointer;background:'+(i===2?'#d6457c22':'#ffffff06');
+    div.innerHTML='<b>'+p.total+' kr za '+p.price+'</b> - '+p.label;
+    div.onclick=()=>{selectedPack=i;renderPacks()};
+    el.appendChild(div);
+  });
+}
+function doReg(){
+  if(Number(document.getElementById('age').value)<18){document.getElementById('regErr').innerText='18+';return}
+  isReg=true;credits+=2;document.getElementById('creditBadge').innerText=credits+' kr';closeReg();
+}
+function writeMsg(p){if(!isReg){openReg();return}curProfile=p;document.getElementById('chatImg').src=p.img;document.getElementById('chatName').innerText=p.name;document.getElementById('msgs').innerHTML='';document.getElementById('chat').classList.add('open')}
+function closeChat(){document.getElementById('chat').classList.remove('open')}
+function sendMsg(){
+  const inp=document.getElementById('msgInput');const txt=inp.value.trim();if(!txt)return;
+  if(credits<0.5){openCred();return}
+  credits=Math.round((credits-0.5)*10)/10;document.getElementById('creditBadge').innerText=credits+' kr';
+  const el=document.getElementById('msgs');
+  const div=document.createElement('div');div.style.cssText='display:flex;justify-content:flex-end';
+  div.innerHTML='<div style="background:#d6457c;color:#fff;border-radius:18px;padding:10px 14px;max-width:78%">'+txt+'</div>';
+  el.appendChild(div);inp.value='';el.scrollTop=el.scrollHeight;
+}
+function buyPack(){const p=PACKS[selectedPack];credits+=p.total;document.getElementById('creditBadge').innerText=credits+' kr';closeCred();}
+renderProfiles();
+</script>
+</body>
+</html>
